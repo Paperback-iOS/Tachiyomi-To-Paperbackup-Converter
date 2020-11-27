@@ -7,6 +7,8 @@ const asyncgunzip = require('async-gzip-gunzip').asyncGunzip
 
 const port = process.env.PORT || "3000";
 
+const conversionManager = new ConversionManager()
+
 app.use(cors())
 app.use(fileUpload({
     safeFileNames: true,
@@ -34,7 +36,6 @@ app.post('/', async function (req, res) {
     }
 
     // Decompress and process this file
-    let conversionManager = new ConversionManager()
     conversionManager.handleConversion(res, await asyncgunzip(uploadedFile.data))       // Response to client is handled inside of here
 })
 
@@ -42,9 +43,6 @@ app.listen(port, err => {
     if (err) {
         return console.error(err);
     }
-
-    console.log(app)
-
     return console.log(`server is listening on ${port}`);
 });
 
