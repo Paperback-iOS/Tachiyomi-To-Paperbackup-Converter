@@ -1,0 +1,33 @@
+{
+  "name": "md-heroku",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/app.js",
+  "scripts": {
+    "start": "ts-node src/app.ts",
+    "dev": "nodemon -e ts  --exec \"npm run start\"",
+    "recompile-tachiyomi-proto": "pbjs -t static-module -w commonjs -o src/proto/TachiyomiObjectModel.js src/proto/tachiyomiObjectModel.proto && pbts -o src/proto/TachiyomiObjectModel.d.ts src/proto/TachiyomiObjectModel.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.9"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.165",
+    "@types/node": "^12.12.19",
+    "@types/protobufjs": "^6.0.0",
+    "async-gzip-gunzip": "^1.0.1",
+    "awesome-metadata": "^0.1.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.2.0",
+    "lodash": "^4.17.20",
+    "protobufjs": "^6.10.2",
+    "ts-express-validator": "^0.1.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^5.20.1",
+    "typescript": "^3.7.3"
+  }
+}

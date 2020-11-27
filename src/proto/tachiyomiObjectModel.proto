@@ -1,0 +1,74 @@
+// tachiyomiObjectModel.proto
+syntax = "proto3";
+
+package TachiyomiObjectModel;
+
+// Created from https://github.com/jobobby04/TachiyomiSY/blob/22933da5d8a2e803a4df8c01aaee6a3e6aa01ecf/app/src/main/java/eu/kanade/tachiyomi/data/backup/full/models/BackupManga.kt
+message BackupManga {
+    int64 source = 1;
+    string url = 2;
+    string title = 3;
+    optional string artist = 4;
+    optional string author = 5;
+    optional string description = 6;
+    repeated string genre = 7;    
+    int64 status = 8;
+    optional string thumbnailUrl = 9;
+    int64 dateAdded = 13;
+    int32 viewer = 14;
+    repeated BackupChapter chapters = 16;
+    repeated int32 categories = 17;
+    repeated BackupTracking tracking = 18;
+    bool favorite = 100;
+    int32 chapterFlags = 101;
+    repeated BackupHistory history = 102;
+}
+
+message BackupChapter {
+    string url = 1;
+    string name = 2;
+    optional string scanlator = 3;
+    bool read = 4;
+    bool bookmark = 5;
+    int32 lastPageRead = 6;
+    int64 dateFetch = 7;
+    int64 dateUplaod = 8;
+    float chapterNumber = 9;
+    int32 sourceOrder = 10;
+}
+
+message BackupTracking {
+    int32 syncId = 1;
+    int64 libraryId = 2;
+    int32 mediaId = 3;
+    string trackingUrl = 4;
+    string title = 5;
+    float lastChapterRead = 6;
+    int32 totalChapters = 7;
+    float score = 8;
+    int32 status = 9;
+    int64 startedReadingDate = 10;
+    int64 finishedReadingDate = 11;
+}
+
+message BackupHistory {
+    string url = 0;
+    int64 lastRead =1 ;
+}
+
+message BackupCategory {
+    string name = 1;
+    int32 order = 2;
+    int32 flags = 100;
+}
+
+message BackupSource {
+    string name = 0;
+    int64 sourceId = 1;
+}
+
+message Backup {
+    repeated BackupManga backupManga = 1;
+    repeated BackupCategory backupCategories = 2;
+    repeated BackupSource backupSources = 100;
+}
