@@ -117,7 +117,7 @@
                 console.log(response);
                 // Generate a filename and queue a download operation'
                 let title = new Date().toDateString() + "-PaperbackConversion.json"
-                downloadData(title, response)
+                downloadData(title, response.paperbackBackup)
 
               })
               .fail(function(xhr, status, error) {
