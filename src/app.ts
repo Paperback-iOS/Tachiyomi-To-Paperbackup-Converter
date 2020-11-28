@@ -5,6 +5,17 @@ const cors = require('cors')
 const app = express();
 const asyncgunzip = require('async-gzip-gunzip').asyncGunzip
 const path = require('path')
+const io = require('@pm2/io')
+
+var meter = io.meter({
+    name : 'req/min',
+    samples: 1,
+    timeframe: 60
+})
+
+var counter = io.counter({
+    name: 'Requests since last restart'
+})
 
 const port = process.env.PORT || "3000";
 
@@ -37,6 +48,8 @@ app.use(function(req, res, next) {
 app.post('/', async function (req, res) {
 
     console.log('Processing request for ' + req.header('x-forwarded-for') || req.connection.remoteAddress)
+    meter.mark()
+    counter.inc()
 
     if(!req.files || Object.keys(req.files).length === 0) {
 	console.log('No files uploaded for request')

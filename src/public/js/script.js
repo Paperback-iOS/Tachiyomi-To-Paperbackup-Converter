@@ -6,12 +6,6 @@ $(document).ready(function() {
         // First, read the file contents
         var file = $("#fileUploadButton").prop('files')[0]
 
-        // Ensure that this is a gzip file, if not, alert the user
-        // if(file.type != "application/x-gzip") {
-        //     $("#warning").text("Please make sure that your backup file ends in .proto.gz")
-        //     return
-        // }
-
         var form = new FormData()
         form.append("backupFile", file, file.name)
 
