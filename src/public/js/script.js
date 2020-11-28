@@ -30,9 +30,25 @@ $(document).ready(function() {
           
           $.ajax(settings).done(function (response) {
             console.log(response);
+            // Generate a filename and queue a download operation'
+            let title = new Date().toDateString() + "-PaperbackConversion.json"
+            downloadData(title, response)
+
           })
           .fail(function(xhr, status, error) {
             $("#warning").text(`Error: ${xhr.responseText}`)
           });
     })
 })
+
+// Tell the browser to start a download operation on a given set of text
+function downloadData(filename, text) {
+  var element = document.createElement('a')
+  element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text))
+  element.setAttribute('download', filename)
+
+  element.style.display = 'none'
+  document.body.appendChild(element)
+  element.click()
+  document.body.removeChild(element)
+}
