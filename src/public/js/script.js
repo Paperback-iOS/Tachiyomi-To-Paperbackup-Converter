@@ -1,4 +1,4 @@
-const remoteEndpoint = "convert.stormcloud.host" // Where do we send these files for conversion?
+const remoteEndpoint = "http://convert.stormcloud.host" // Where do we send these files for conversion?
 
 $(document).ready(function() {
     $("#fileUploadButton").change(function() {
