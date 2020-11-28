@@ -1,4 +1,4 @@
-const remoteEndpoint = "127.0.0.1:3000" // Where do we send these files for conversion?
+const remoteEndpoint = "convert.stormcloud.host" // Where do we send these files for conversion?
 
 $(document).ready(function() {
     $("#fileUploadButton").change(function() {
@@ -9,7 +9,7 @@ $(document).ready(function() {
         console.log(file.type)
         // Ensure that this is a gzip file, if not, alert the user
         if(file.type != "application/x-gzip") {
-            $("#warning").text("You fucked it")
+            $("#warning").text("Please make sure that your backup file ends in .proto.gz")
             return
         }
 
@@ -27,9 +27,14 @@ $(document).ready(function() {
             "processData": false,
             "data": form
           };
+
+          console.log(settings)
           
           $.ajax(settings).done(function (response) {
             console.log(response);
+          })
+          .fail(function(xhr, status, error) {
+            $("#warning").text(`Error: ${error}`)
           });
     })
 })

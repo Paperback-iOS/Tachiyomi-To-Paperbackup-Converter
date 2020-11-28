@@ -19,14 +19,14 @@
     <!-- Header with links to other Paperback locations -->
     <div class="ui fixed inverted menu">
         <div class="ui container">
-            <a href="#" class="item">
-                Some Link, Discord maybe
+            <a href="https://discord.gg/Gn2njN8D3f" class="item">
+                Discord
             </a>
-            <a href="#" class="item">
-                Patreon link I guess
+            <a href="https://www.patreon.com/FaizanDurrani" class="item">
+                Patreon
             </a>
-            <a href="#" class="item">
-                Reddit?
+            <a href="https://www.reddit.com/r/Paperback/" class="item">
+                Reddit
             </a>
         </div>
     </div>
@@ -40,12 +40,14 @@
             <div class="ten wide column">
                 <div class="ui segment">
                     <h1 class="ui header">
-                        Provide a Tachiyomi Backup v3 or higher
+                        Provide a Tachiyomi .gz Backup
                     </h1>
-                    <p>This version of backup isn't released yet, so Conrad needs to change this text before the tool is released</p>
+                    <p>Recently Tachiyomi updated their backup formatting from .json to a .gz extension using Protocol Buffers. This tool will only work
+                        on the new version of backups.
+                    </p>
                     <form class = "ui form" id="form" name="form">
                         <div class="ui input">
-                            <input type="file" id="fileUploadButton" name="fileUploadButton" placeholder="Upload .json">
+                            <input type="file" id="fileUploadButton" name="fileUploadButton" placeholder="Upload .proto.gz">
                         </div>
                     </form>
                     <div id="warning"></div>
@@ -63,8 +65,10 @@
                         Below is a list of Tachiyomi sources which this tool is able to handle.
                     </p>
                     <!-- Add sources which this backup tool can use to this list below -->
-                    <div class="ui bulleted list">
-                        <div class="item">Manganelo</div>
+                    <div class="ui segment">
+                        <div class="ui bulleted list">
+                            <div class="item">Manganelo</div> 
+                        </div>
                     </div>
                 </div>
             </div>
