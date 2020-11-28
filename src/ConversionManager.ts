@@ -38,7 +38,7 @@ export class ConversionManager {
         // Load the protobuf tachiyomi backup file to an in-memory representation using a protocol buffer decoding process
         var decodedData = TachiyomiObjectModel.Backup.decode(unzippedFile)
         var convertedMangaObjects: PaperbackMangaObject[] = []
-        var noConversionPossibleObjects: TachiyomiObjectModel.IBackupManga[] = []
+        var noConversionPossibleObjects = []
         var convertedChapterObjects: PaperbackChapterMarkerObject[] = []
 
         // Create a converted manga object of each compatible entry
@@ -56,11 +56,17 @@ export class ConversionManager {
             // We don't know how to parse this object
             else {
                 console.log(`Unable to process ${manga.source.toString()} - for object ${manga.title}`)
-                noConversionPossibleObjects.push(manga)
+                noConversionPossibleObjects.push({sourceId: manga.source.toString(), mangaTitle: manga.title})
             }
         }
         
-        let returnVal = this.packMangaIntoBackup(convertedMangaObjects, convertedChapterObjects)
+        // Generate our payload which we are returning to the user, including all of the manga which aren't being converted
+        let packedManga = this.packMangaIntoBackup(convertedMangaObjects, convertedChapterObjects)
+        let returnVal = {
+            noConvert: noConversionPossibleObjects,
+            paperbackBackup: packedManga
+        }
+
         return serverResponseObject.status(200).send(JSON.stringify(returnVal))
     }
 
