@@ -17,8 +17,10 @@ app.use(fileUpload({
     debug: false
 }))
 
+app.set('trust proxy', true)
+
 // Include the javascript files with express
-app.use(express.static(__dirname + '/public'))
+app.use(express.static(__dirname + '/public/js'))
 
 // Broadcast a CORS accept for things outside of our local domain
 app.use(function(req, res, next) {
@@ -34,13 +36,18 @@ app.get('/', function (req, res) {
 
 app.post('/', async function (req, res) {
 
+    console.log('Processing request for ' + req.header('x-forwarded-for') || req.connection.remoteAddress)
+
     if(!req.files || Object.keys(req.files).length === 0) {
+	console.log('No files uploaded for request')
         return res.status(400).send("No files were uploaded")
     }
     let uploadedFile = req.files.backupFile
 
-    // Ensure that we were given a .gz file 
-    if(uploadedFile.mimetype != "application/gzip") {
+    // Ensure that we were given a .gz file
+    console.log(uploadedFile.mimetype)
+    if(uploadedFile.mimetype != "application/x-gzip" && uploadedFile.mimetype != "application/gzip") {
+	console.log('Incorrect file format uploaded')
         return res.status(400).send("This does not appear to be a Tachiyomi backup, file extension should be .gz")
     }
 
