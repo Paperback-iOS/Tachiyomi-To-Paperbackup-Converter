@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload')
 const cors = require('cors')
 const app = express();
 const asyncgunzip = require('async-gzip-gunzip').asyncGunzip
+const path = require('path')
 
 const port = process.env.PORT || "3000";
 
@@ -13,7 +14,7 @@ app.use(cors())
 app.use(fileUpload({
     safeFileNames: true,
     preserveExtension: 2,
-    debug: true
+    debug: false
 }))
 
 // Broadcast a CORS accept for things outside of our local domain
@@ -22,6 +23,11 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+app.get('/', function (req, res) {
+    // Send the main page
+    res.sendFile(path.join(__dirname + '/public/index.html'))
+})
 
 app.post('/', async function (req, res) {
 
