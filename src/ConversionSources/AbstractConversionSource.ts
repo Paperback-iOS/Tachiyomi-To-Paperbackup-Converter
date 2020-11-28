@@ -20,9 +20,8 @@ export abstract class AbstractConversionSource {
     /**
      * A method which takes a Tachiyomi CHAPTER id, and converts it to something Paperback can read.
      * Example: Tachiyomi might send '/chapter/dj919202/chapter_4' as a chapter, where Paperback may only need 'dj919202/chapter_4'
-     * Return both the manga ID, and the chapter ID
      */
-    abstract parseChapterId(tachiyomiId): {mangaId: string, chapterId: string}
+    abstract parseChapterId(tachiyomiId): string
 
     parseMangaObject(manga: TachiyomiObjectModel.IBackupManga): PaperbackMangaObject {
 
@@ -58,15 +57,28 @@ export abstract class AbstractConversionSource {
         return obj
     }
 
-    parseChapterObject(chapter: TachiyomiObjectModel.IBackupChapter): PaperbackChapterMarkerObject {
+    parseChapterObject(history: TachiyomiObjectModel.IBackupHistory, sourceManga: TachiyomiObjectModel.IBackupManga): PaperbackChapterMarkerObject {
         let obj = new PaperbackChapterMarkerObject()
 
-        let chapterDetails = this.parseChapterId(chapter.url)
-        obj.chapterId = chapterDetails.chapterId
-        obj.mangaId = chapterDetails.mangaId
-        obj.lastPage = chapter.lastPageRead
-        obj.time = Number(chapter.dateFetch)
-        obj.totalPages = chapter.lastPageRead   // This may be wrong?
+        // Get the corresponding chapter details for this history element
+        let backupChapter: TachiyomiObjectModel.IBackupChapter
+        for(let obj of sourceManga.chapters) {
+            if(history.url == obj.url) {
+                backupChapter = obj
+                break
+            }
+        }
+
+        // You should never hit this error, but if Tachiyomi somehow has a history element without a corresponding chapter, don't fill data
+        if(backupChapter === undefined) {
+            return obj
+        }
+
+        obj.chapterId = this.parseChapterId(history.url)
+        obj.mangaId = this.parseMangaId(sourceManga.url)
+        obj.lastPage = backupChapter.lastPageRead
+        obj.time = Number(backupChapter.dateFetch)
+        obj.totalPages = backupChapter.lastPageRead   // This may be wrong?
         obj.sourceId = this.paperbackSourceName
 
         return obj

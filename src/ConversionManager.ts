@@ -2,6 +2,8 @@ import Axios from 'axios'
 import {Response} from 'express'
 import { Dictionary } from 'lodash'
 import { AbstractConversionSource } from './ConversionSources/AbstractConversionSource'
+import { MangadexConversionSource } from './ConversionSources/MangadexConversionSource'
+import { MangaLifeConversionSource } from './ConversionSources/MangaLifeConversionSource'
 import {ManganeloConversionSource} from './ConversionSources/ManganeloConversionSource'
 import { PaperbackBackupObject } from './PaperbackDataTypes/PaperbackBackupObject'
 import { PaperbackChapterMarkerObject } from './PaperbackDataTypes/PaperbackChapterMarkerObject'
@@ -17,6 +19,8 @@ export class ConversionManager {
     constructor() {
         // Add all of the available migration objects to the manager
         this.migrationSources[ManganeloConversionSource.tachiyomiSourceId.toString()] = new ManganeloConversionSource()
+        this.migrationSources[MangaLifeConversionSource.tachiyomiSourceId.toString()] = new MangaLifeConversionSource()
+        this.migrationSources[MangadexConversionSource.tachiyomiSourceId.toString()] = new MangadexConversionSource()
 
         // Grab the supported repositories and the metadata attached to such and add it to our aliveSources list
         this.getRepositories()
@@ -37,14 +41,15 @@ export class ConversionManager {
             if(this.migrationSources[manga.source.toString()] !== undefined) {
                 convertedMangaObjects.push(this.migrationSources[manga.source.toString()].parseMangaObject(manga))
                 
-                // For every available chapter of this manga, create a chapter marker object
-                for(let chapter of manga.chapters) {
-                    convertedChapterObjects.push(this.migrationSources[manga.source.toString()].parseChapterObject(chapter))
+                // For every read history inside of the object, generate a corresponding object
+                for(let history of manga.history) {
+                    convertedChapterObjects.push(this.migrationSources[manga.source.toString()].parseChapterObject(history, manga))
                 }
             }
 
             // We don't know how to parse this object
             else {
+                console.log(`Unable to process ${manga.source.toString()} - for object ${manga.title}`)
                 noConversionPossibleObjects.push(manga)
             }
         }

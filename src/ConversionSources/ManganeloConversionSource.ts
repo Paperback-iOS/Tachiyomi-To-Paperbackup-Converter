@@ -11,11 +11,9 @@ export class ManganeloConversionSource extends AbstractConversionSource {
         return tachiyomiId.replace('/manga/', '')
     }
 
-    parseChapterId(tachiyomiId: string): {mangaId: string, chapterId: string} {
+    parseChapterId(tachiyomiId: string): string {
         // '/chapter/dj919202/chapter_4' is an example of what we might see
-        let cutId = tachiyomiId.replace('/chapter/', '')
-        let splitVal = cutId.split('/')
-        return {mangaId: splitVal[0], chapterId: splitVal[1]}
+        return tachiyomiId.replace(/(.+)\//, '')
     }
 
 }
