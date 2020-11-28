@@ -4,6 +4,7 @@ import { Dictionary } from 'lodash'
 import { AbstractConversionSource } from './ConversionSources/AbstractConversionSource'
 import {ManganeloConversionSource} from './ConversionSources/ManganeloConversionSource'
 import { PaperbackBackupObject } from './PaperbackDataTypes/PaperbackBackupObject'
+import { PaperbackChapterMarkerObject } from './PaperbackDataTypes/PaperbackChapterMarkerObject'
 import { PaperbackMangaObject } from './PaperbackDataTypes/PaperbackMangaObject'
 import {TachiyomiObjectModel} from './proto/TachiyomiObjectModel'
 import { RepositoryObject, RepositoryTag, SourceObject } from './Types/RepositoryObject'
@@ -11,14 +12,13 @@ import { RepositoryObject, RepositoryTag, SourceObject } from './Types/Repositor
 export class ConversionManager {
 
     migrationSources: Dictionary<AbstractConversionSource> = {}
-    aliveRepositories: RepositoryObject[]
+    aliveSources: Dictionary<SourceObject> = {}
 
     constructor() {
         // Add all of the available migration objects to the manager
         this.migrationSources[ManganeloConversionSource.tachiyomiSourceId.toString()] = new ManganeloConversionSource()
 
-        // Grab the supported repositories and the metadata attached to such and add it to our AliveRepositories list
-        this.aliveRepositories = []
+        // Grab the supported repositories and the metadata attached to such and add it to our aliveSources list
         this.getRepositories()
     }
 
@@ -29,12 +29,18 @@ export class ConversionManager {
         var decodedData = TachiyomiObjectModel.Backup.decode(unzippedFile)
         var convertedMangaObjects: PaperbackMangaObject[] = []
         var noConversionPossibleObjects: TachiyomiObjectModel.IBackupManga[] = []
+        var convertedChapterObjects: PaperbackChapterMarkerObject[] = []
 
         // Create a converted manga object of each compatible entry
         for(let manga of decodedData.backupManga) {
             // If we support conversion of this entry, do such
             if(this.migrationSources[manga.source.toString()] !== undefined) {
                 convertedMangaObjects.push(this.migrationSources[manga.source.toString()].parseMangaObject(manga))
+                
+                // For every available chapter of this manga, create a chapter marker object
+                for(let chapter of manga.chapters) {
+                    convertedChapterObjects.push(this.migrationSources[manga.source.toString()].parseChapterObject(chapter))
+                }
             }
 
             // We don't know how to parse this object
@@ -43,17 +49,27 @@ export class ConversionManager {
             }
         }
         
-        let returnVal = this.packMangaIntoBackup(convertedMangaObjects)
+        let returnVal = this.packMangaIntoBackup(convertedMangaObjects, convertedChapterObjects)
         return serverResponseObject.status(200).send(JSON.stringify(returnVal))
     }
 
-    packMangaIntoBackup(manga: PaperbackMangaObject[]): PaperbackBackupObject {
+    packMangaIntoBackup(manga: PaperbackMangaObject[], chapters: PaperbackChapterMarkerObject[]): PaperbackBackupObject {
         var paperbackBackupObject: PaperbackBackupObject = new PaperbackBackupObject()
 
         // Pack all of the manga objects into reading for now
         //TODO: Support other types of library
         for(let obj of manga) {
             paperbackBackupObject.appendReadingManga(obj)
+
+            // Add this source to the backup list if it exists in our metadata list
+            if(this.aliveSources[obj.sourceId] !== undefined) {
+                paperbackBackupObject.appendActiveSource(this.aliveSources[obj.sourceId])
+            }
+        }
+
+        // Append each chapter marker to our backup file
+        for(let obj of chapters) {
+            paperbackBackupObject.appendChapterMarker(obj)
         }
 
         return paperbackBackupObject
@@ -73,7 +89,6 @@ export class ConversionManager {
 
     registerRepository(res) {
         let response = res.data
-        let repository = new RepositoryObject()
         
         for(let obj of response.sources) {
             // Verbose mapping so that if the format changes, a reflection function doesn't error
@@ -95,10 +110,12 @@ export class ConversionManager {
             }
 
             source.websiteBaseURL = obj.websiteBaseURL
-            repository.sources.push(source)
+            source.repo = res.config.url.replace('/versioning.json', '')
+            source.icon = obj.icon
+
+            this.aliveSources[source.name] = source
         }
 
-        this.aliveRepositories.push(repository)
         // Log to console the repository name as info
         let repoName = res.config.url.match(/\.io\/(.+)\/versioning.json/)[1]
         console.log(`[Info] Registered repository ${repoName}`)

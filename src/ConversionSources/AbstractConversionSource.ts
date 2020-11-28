@@ -1,3 +1,4 @@
+import { PaperbackChapterMarkerObject } from "../PaperbackDataTypes/PaperbackChapterMarkerObject"
 import { PaperbackMangaObject } from "../PaperbackDataTypes/PaperbackMangaObject"
 import { TachiyomiObjectModel } from "../proto/TachiyomiObjectModel"
 
@@ -35,23 +36,38 @@ export abstract class AbstractConversionSource {
         obj.object.follows = 0                             // Follows do not exist in Tachiyomi backups
         obj.object.views = 0                               // Views do not exist in Tachiyomi backups
         obj.object.langFlag = "_unknown"                   // Language flag does not exist in Tachiyomi backups
-        obj.object.lastUpdate = ""                         //TODO: Should this be the current date? Tachiyomi doesn't have this
+        obj.object.lastUpdate = new Date().toDateString()
         
         // Grab all of the tags
-        let genreList = {id: "0", label: "genres", tags: []}
+        let tags: string[] = []
         for(let genre of manga.genre) {
-            genreList.tags.push(genre)
+            tags.push(genre)
         }
-        obj.object.tags = genreList
+        obj.object.tags.push({id: "0", label: "genres", tags: tags})
 
         obj.object.titles.push(manga.title)
         obj.object.image = manga.thumbnailUrl
         obj.object.relatedManga = []                       // Not supported
         obj.object.hentai = false;                         // Not supported, which is kinda awkward, so flag everything as false so nothing is hidden by default
-        obj.object.langName = ""                           // Not supported
+        obj.object.langName = "Unknown"                           // Not supported
         obj.object.artist = manga.artist
         obj.object.status = manga.status.toString()        // Long cannot be converted to number, tachiyomi has this as a long. I hope this works
         obj.object.avgRating = 0                           // Not supported
+
+
+        return obj
+    }
+
+    parseChapterObject(chapter: TachiyomiObjectModel.IBackupChapter): PaperbackChapterMarkerObject {
+        let obj = new PaperbackChapterMarkerObject()
+
+        let chapterDetails = this.parseChapterId(chapter.url)
+        obj.chapterId = chapterDetails.chapterId
+        obj.mangaId = chapterDetails.mangaId
+        obj.lastPage = chapter.lastPageRead
+        obj.time = Number(chapter.dateFetch)
+        obj.totalPages = chapter.lastPageRead   // This may be wrong?
+        obj.sourceId = this.paperbackSourceName
 
         return obj
     }

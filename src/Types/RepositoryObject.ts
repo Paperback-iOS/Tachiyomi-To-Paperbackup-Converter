@@ -1,10 +1,12 @@
 import { stringify } from "querystring";
 
 export class RepositoryObject {
-    sources: SourceObject[]
-
-    constructor() {
-        this.sources = []
+    name: string;
+    url: string
+    
+    constructor(name: string, url: string) {
+        this.name = name;
+        this.url = url
     }
 }
 
@@ -15,7 +17,8 @@ export class SourceObject {
     desc: string;
     website: string;
     version: String
-    icon: string | null
+    icon: string
+    repo: string
     tags: RepositoryTag[]
     websiteBaseURL: string
 

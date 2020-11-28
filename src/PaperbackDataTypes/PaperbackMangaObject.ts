@@ -21,7 +21,7 @@ export class PaperbackMangaObject {
         this.object.langFlag = "_unknown"
         this.object.lastUpdate = ""
         this.object.covers = []
-        this.object.tags
+        this.object.tags = []
         this.object.titles = []
         this.object.image = ""
         this.object.relatedManga = []
@@ -45,7 +45,7 @@ class SubPaperbackObject {
     langFlag: String
     lastUpdate: string
     covers: string[]
-    tags: {id: string, label: string, tags: string[]}
+    tags: {id: string, label: string, tags: string[]}[]
     titles: string[]
     image: string
     relatedManga: string[]

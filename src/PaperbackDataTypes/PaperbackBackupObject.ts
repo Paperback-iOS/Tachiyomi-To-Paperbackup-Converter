@@ -1,3 +1,5 @@
+import { RepositoryObject, SourceObject } from "../Types/RepositoryObject"
+import { PaperbackChapterMarkerObject } from "./PaperbackChapterMarkerObject"
 import { PaperbackMangaObject } from "./PaperbackMangaObject"
 
 export class PaperbackBackupObject {
@@ -11,9 +13,9 @@ export class PaperbackBackupObject {
         "6": object[]
     }
 
-    private sourceRepositories: []
-    private activeSources: []
-    private chapterMarkers: []
+    private sourceRepositories: RepositoryObject[]
+    private activeSources: SourceObject[]
+    private chapterMarkers: PaperbackChapterMarkerObject[]
     private version: string     
 
     constructor() {
@@ -26,21 +28,31 @@ export class PaperbackBackupObject {
         this.activeSources = []
         this.chapterMarkers = []
         this.version = "v0.3.0-b11.0.37"    // We'll just use this version of backup, since we know future versions are backwards compatible to such
+
+        // Always add the default source repository
+        this.sourceRepositories.push(new RepositoryObject("Official Repo", "https://paperback-ios.github.io/extensions-beta"))
     }
 
     appendReadingManga(manga: PaperbackMangaObject): void {
         this.library["1"].push(manga)
     }
 
-    appendSourceRepository(): void {
+    appendSourceRepository(source: SourceObject): void {
+
 
     }
 
-    appendActiveSource(): void {
+    appendActiveSource(source: SourceObject): void {
+        // If this source is already registered, do not apply a duplicate
+        if(this.activeSources.includes(source)) {
+            return
+        }
 
+        this.activeSources.push(source)
     }
 
-    appendChapterMarker(): void {
-
+    appendChapterMarker(chapter: PaperbackChapterMarkerObject): void {
+        this.chapterMarkers.push(chapter)
     }
+
 }
