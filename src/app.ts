@@ -17,6 +17,9 @@ app.use(fileUpload({
     debug: false
 }))
 
+// Include the javascript files with express
+app.use(express.static(__dirname + '/public'))
+
 // Broadcast a CORS accept for things outside of our local domain
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
