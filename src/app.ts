@@ -45,9 +45,8 @@ app.post('/', async function (req, res) {
     let uploadedFile = req.files.backupFile
 
     // Ensure that we were given a .gz file
-    console.log(uploadedFile.mimetype)
     if(uploadedFile.mimetype != "application/x-gzip" && uploadedFile.mimetype != "application/gzip") {
-	console.log('Incorrect file format uploaded')
+	console.log('Incorrect file format uploaded, given ' + uploadedFile.mimetype)
         return res.status(400).send("This does not appear to be a Tachiyomi backup, file extension should be .gz")
     }
 
