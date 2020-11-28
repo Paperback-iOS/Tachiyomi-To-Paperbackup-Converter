@@ -2,9 +2,12 @@ import Axios from 'axios'
 import {Response} from 'express'
 import { Dictionary } from 'lodash'
 import { AbstractConversionSource } from './ConversionSources/AbstractConversionSource'
+import { GuyaConversionSource } from './ConversionSources/GuyaConversionSource'
 import { MangadexConversionSource } from './ConversionSources/MangadexConversionSource'
 import { MangaLifeConversionSource } from './ConversionSources/MangaLifeConversionSource'
 import {ManganeloConversionSource} from './ConversionSources/ManganeloConversionSource'
+import { MangaReaderConversionSource } from './ConversionSources/MangaReaderConversionSource'
+import { MangaseeConversionSource } from './ConversionSources/MangaseeConversionSource'
 import { PaperbackBackupObject } from './PaperbackDataTypes/PaperbackBackupObject'
 import { PaperbackChapterMarkerObject } from './PaperbackDataTypes/PaperbackChapterMarkerObject'
 import { PaperbackMangaObject } from './PaperbackDataTypes/PaperbackMangaObject'
@@ -21,6 +24,9 @@ export class ConversionManager {
         this.migrationSources[ManganeloConversionSource.tachiyomiSourceId.toString()] = new ManganeloConversionSource()
         this.migrationSources[MangaLifeConversionSource.tachiyomiSourceId.toString()] = new MangaLifeConversionSource()
         this.migrationSources[MangadexConversionSource.tachiyomiSourceId.toString()] = new MangadexConversionSource()
+        this.migrationSources[GuyaConversionSource.tachiyomiSourceId.toString()] = new GuyaConversionSource()
+        this.migrationSources[MangaReaderConversionSource.tachiyomiSourceId.toString()] = new MangaReaderConversionSource()
+        this.migrationSources[MangaseeConversionSource.tachiyomiSourceId.toString()] = new MangaseeConversionSource()
 
         // Grab the supported repositories and the metadata attached to such and add it to our aliveSources list
         this.getRepositories()
