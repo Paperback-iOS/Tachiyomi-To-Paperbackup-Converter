@@ -38,9 +38,9 @@ export abstract class AbstractConversionSource {
         obj.object.lastUpdate = new Date().toDateString()
         
         // Grab all of the tags
-        let tags: string[] = []
+        let tags: {id: string, value: string}[] = []
         for(let genre of manga.genre) {
-            tags.push(genre)
+            tags.push({id: genre, value: genre})
         }
         obj.object.tags.push({id: "0", label: "genres", tags: tags})
 
@@ -50,7 +50,7 @@ export abstract class AbstractConversionSource {
         obj.object.hentai = false;                         // Not supported, which is kinda awkward, so flag everything as false so nothing is hidden by default
         obj.object.langName = "Unknown"                           // Not supported
         obj.object.artist = manga.artist
-        obj.object.status = manga.status.toString()        // Long cannot be converted to number, tachiyomi has this as a long. I hope this works
+        obj.object.status = Number(manga.status.toString())                  // Long cannot be converted to number, tachiyomi has this as a long. I hope this works
         obj.object.avgRating = 0                           // Not supported
 
 

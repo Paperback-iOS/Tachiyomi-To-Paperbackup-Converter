@@ -28,7 +28,7 @@ export class PaperbackMangaObject {
         this.object.hentai = false
         this.object.langName = "Unknown"
         this.object.artist = ""
-        this.object.status = ""
+        this.object.status = 0
         this.object.avgRating = 0
     }
 
@@ -45,13 +45,13 @@ class SubPaperbackObject {
     langFlag: String
     lastUpdate: string
     covers: string[]
-    tags: {id: string, label: string, tags: string[]}[]
+    tags: {id: string, label: string, tags: {id: string, value: string}[]}[]
     titles: string[]
     image: string
     relatedManga: string[]
     hentai: boolean
     langName: string
     artist: string
-    status: string
+    status: number
     avgRating: number
 }
