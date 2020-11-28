@@ -1,9 +1,143 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="refresh" content="7; url='http://convert.stormcloud.host'" />
-  </head>
-  <body>
-    <p>Please follow <a href="http://convert.stormcloud.host">this link</a>.</p>
-  </body>
+<!-- The web portal for the Tachiyomi to Paperback backup converter, probably run this on a Heroku instance, or somewhere cheap. -->
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Tachiyomi to Paperback Converter</title>
+
+        <!-- Jquery from CDN -->
+        <script src="http://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+        <!-- Semantic-ui from CDN -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.js"></script>
+    
+    </head>
+
+    <body>
+    <!-- Header with links to other Paperback locations -->
+    <div class="ui fixed inverted menu">
+        <div class="ui container">
+            <a href="https://discord.gg/Gn2njN8D3f" class="item">
+                Discord
+            </a>
+            <a href="https://www.patreon.com/FaizanDurrani" class="item">
+                Patreon
+            </a>
+            <a href="https://www.reddit.com/r/Paperback/" class="item">
+                Reddit
+            </a>
+        </div>
+    </div>
+    <br><br><br>
+    <!-- Main container with the instruction text, and the upload form -->
+    <div class="ui main center aligned container">
+        <h1 class="ui header">Tachiyomi to Paperback - Backup Converter</h1>
+        
+        <!-- Grid containing the instruction and compatibility list-->
+        <div class="ui grid">
+            <div class="ten wide column">
+                <div class="ui segment">
+                    <h1 class="ui header">
+                        Provide a Tachiyomi .gz Backup
+                    </h1>
+                    <p>Recently Tachiyomi updated their backup formatting from .json to a .gz extension using Protocol Buffers. This tool will only work
+                        on the new version of backups. Legacy backups are unsupported.
+                    </p>
+                    <form class = "ui form" id="form" name="form">
+                        <div class="ui input">
+                            <input type="file" id="fileUploadButton" name="fileUploadButton" placeholder="Upload .proto.gz">
+                        </div>
+                    </form>
+                    <div id="warning"></div>
+                </div>
+            </div>
+            <div class="six wide column">
+                <div class="ui segment">
+                    <h1 class="ui header">
+                        Supported Sources
+                    </h1>
+                    <p>Because Tachiyomi and Paperback both work with community-created sources, the backup conversion process can only use
+                        sources which both Paperback and Tachiyomi share. 
+                    </p>
+                    <p>
+                        Below is a list of Tachiyomi sources which this tool is able to handle.
+                    </p>
+                    <!-- Add sources which this backup tool can use to this list below -->
+                    <div class="ui segment">
+                        <div class="ui bulleted list">
+                            <div class="item">Manganelo</div>
+                            <div class="item">Mangadex</div>
+                            <div class="item">MangaLife</div>
+                            <div class="item">Mangasee</div>
+                            <div class="item">MangaReader</div>
+                            <div class="item">Guya</div>
+                        </div>
+                    </div>
+                    Additional source functionality will be added in the near future
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<footer>
+    <script>
+
+    const remoteEndpoint = "http://convert.stormcloud.host" // Where do we send these files for conversion?
+
+    $(document).ready(function() {
+        $("#fileUploadButton").change(function() {
+            // When the user registers a file, attempt to perform a conversion
+            // First, read the file contents
+            var file = $("#fileUploadButton").prop('files')[0]
+
+            // Ensure that this is a gzip file, if not, alert the user
+            // if(file.type != "application/x-gzip") {
+            //     $("#warning").text("Please make sure that your backup file ends in .proto.gz")
+            //     return
+            // }
+
+            var form = new FormData()
+            form.append("backupFile", file, file.name)
+
+            // Send this in for processing
+            var settings = {
+                "url": remoteEndpoint,
+                "method": "POST",
+                "timeout": 0,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "processData": false,
+                "data": form
+              };
+
+              console.log(settings)
+
+              $.ajax(settings).done(function (response) {
+                console.log(response);
+                // Generate a filename and queue a download operation'
+                let title = new Date().toDateString() + "-PaperbackConversion.json"
+                downloadData(title, response)
+
+              })
+              .fail(function(xhr, status, error) {
+                $("#warning").text(`Error: ${xhr.responseText}`)
+              });
+        })
+    })
+
+    // Tell the browser to start a download operation on a given set of text
+    function downloadData(filename, text) {
+      var element = document.createElement('a')
+      element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text))
+      element.setAttribute('download', filename)
+
+      element.style.display = 'none'
+      document.body.appendChild(element)
+      element.click()
+      document.body.removeChild(element)
+    }
+
+    </script>
+</footer>
 </html>
