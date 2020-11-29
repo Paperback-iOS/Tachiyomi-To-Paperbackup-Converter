@@ -36,7 +36,15 @@ export class ConversionManager {
     handleConversion(serverResponseObject: Response, unzippedFile) {
 
         // Load the protobuf tachiyomi backup file to an in-memory representation using a protocol buffer decoding process
-        var decodedData = TachiyomiObjectModel.Backup.decode(unzippedFile)
+        var decodedData
+
+        try {
+            decodedData = TachiyomiObjectModel.Backup.decode(unzippedFile)
+        }
+        catch {
+            serverResponseObject.status(400).send("Failed to decode the Tachiyomi backup, are you sure this is a valid file?")
+        }
+
         var convertedMangaObjects: PaperbackMangaObject[] = []
         var noConversionPossibleObjects = []
         var convertedChapterObjects: PaperbackChapterMarkerObject[] = []
