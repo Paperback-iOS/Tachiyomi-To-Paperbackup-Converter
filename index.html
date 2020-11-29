@@ -115,9 +115,10 @@
 
               $.ajax(settings).done(function (response) {
                 console.log(response);
+                let data = JSON.parse(response)
                 // Generate a filename and queue a download operation'
                 let title = new Date().toDateString() + "-PaperbackConversion.json"
-                downloadData(title, response.paperbackBackup)
+                downloadData(title, data.paperbackBackup)
 
               })
               .fail(function(xhr, status, error) {
@@ -129,7 +130,7 @@
     // Tell the browser to start a download operation on a given set of text
     function downloadData(filename, text) {
       var element = document.createElement('a')
-      element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(text))
+      element.setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(text)))
       element.setAttribute('download', filename)
 
       element.style.display = 'none'
