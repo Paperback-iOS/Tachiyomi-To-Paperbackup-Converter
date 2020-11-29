@@ -43,6 +43,7 @@ export class ConversionManager {
         }
         catch {
             serverResponseObject.status(400).send("Failed to decode the Tachiyomi backup, are you sure this is a valid file?")
+            return
         }
 
         var convertedMangaObjects: PaperbackMangaObject[] = []
