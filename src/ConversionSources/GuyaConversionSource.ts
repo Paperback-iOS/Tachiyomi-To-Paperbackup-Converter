@@ -2,9 +2,9 @@ import { AbstractConversionSource } from "./AbstractConversionSource"
 
 export class GuyaConversionSource extends AbstractConversionSource {
 
-    static tachiyomiSourceId: string = "4637971935551651734"     // Tachiyomi calls Mangadex this value
+    static tachiyomiSourceId: string = "4637971935551651734"     // Tachiyomi calls Guya this value
     tachiyomiSourceName: string = "Guya"           // A user friendly identifier for this tachiyomi source
-    paperbackSourceName: string = "Guya"           // In this case, the source ID in Paperback is also Mangadex!
+    paperbackSourceName: string = "Guya"           // In this case, the source ID in Paperback is also Guya!
 
     parseMangaId(tachiyomiId: string) {
         var cutVal = tachiyomiId.replace('/manga/', '')
