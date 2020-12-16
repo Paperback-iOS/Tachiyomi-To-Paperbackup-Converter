@@ -13,7 +13,7 @@ export class GuyaConversionSource extends AbstractConversionSource {
 
     parseChapterId(tachiyomiId: string): string {
         // /api/chapter/1105111 is an example of something we might see. 
-        return tachiyomiId.match(/.+\/(\d+)\//)[1]
+        return tachiyomiId.match(/.+\/([0-9.]+)\//)[1]
     }
 
 }

@@ -68,8 +68,8 @@ app.post('/', async function (req, res) {
         let decompressedData = await asyncgunzip(uploadedFile.data) // Attempt to decompress the gzip file, warning if something goes wrong
         conversionManager.handleConversion(res, decompressedData)       // Response to client is handled inside of here
     }
-    catch {
-        return res.status(400).send("Failed to decompressed the backup, are you sure this is a real gzip file?")
+    catch (ex){
+        return res.status(400).send("Failed to convert due to a source translation problem." + ex)
     }
     
 })
