@@ -4,10 +4,10 @@
 The converters only support Paperback `backupSchemaVersion` 3 (app version 0.6 and newer) and Tachiyomi `.proto.gz` backup formats.
 
 ```typescript
-// You need to have the original backup as a Buffer
+// The original backup needs to be a Buffer
 const protoGzFile: Buffer
 ```
-> With node, you can use:
+> With node:
 > ```typescript
 > const protoGzFile = readFileSync(path)
 > ```
@@ -17,7 +17,7 @@ const protoGzFile: Buffer
 > ```
 
 ```typescript
-// Unpack the .proto.gz file and export it to a `TachiyomiObjectModel.Backup` object
+// Unpack the .proto.gz file and export it as a `TachiyomiObjectModel.Backup` object
 const tachiyomiBackupManager = new TachiyomiBackupManager()
 tachiyomiBackupManager.loadProtoGz(protoGzFile)
 
@@ -33,7 +33,7 @@ convertionManager.conversion()
 ```
 
 ## Ressources
-Scripts, examples and backups can be found in the `ressource/` folder
+Scripts, examples and backups can be found in the [ressource](ressource/) folder
 
 # Objects description and usage
 
