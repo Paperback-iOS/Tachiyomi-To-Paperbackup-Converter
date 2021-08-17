@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node src/app.ts",
     "dev": "nodemon -e ts  --exec \"npm run start\"",
-    "recompile-tachiyomi-proto": "pbjs -t static-module -w commonjs -o src/proto/TachiyomiObjectModel.js src/proto/tachiyomiObjectModel.proto && pbts -o src/proto/TachiyomiObjectModel.d.ts src/proto/TachiyomiObjectModel.js"
+    "recompile-tachiyomi-proto": "pbjs -t static-module -w commonjs -o src/Tachiyomi/proto/TachiyomiObjectModel.js src/Tachiyomi/proto/tachiyomiObjectModel.proto && pbts -o src/Tachiyomi/proto/TachiyomiObjectModel.d.ts src/Tachiyomi/proto/TachiyomiObjectModel.js"
   },
   "author": "",
   "license": "ISC",
