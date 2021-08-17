@@ -10,8 +10,8 @@
 import { readFileSync, writeFile } from "fs"
 import { TachiyomiBackupManager } from "../src/Tachiyomi/TachiyomiBackupManager"
 
-const path = 'ressources/tachiyomi_six_titles_various_sources.proto.gz'
-const outputPath = 'ressources/converted-backup-examples/tachiyomi_six_titles_various_sources.json'
+const path = 'ressources/backup-examples/tachiyomi_six_titles_various_sources.proto.gz'
+const outputPath = 'ressources/exported-backup-examples/tachiyomi_six_titles_various_sources.json'
 
 const protoGzFile = readFileSync(path)
 
