@@ -7,7 +7,7 @@
  * ```
  */
 
-import { readFileSync, writeFile } from "fs"
+import { mkdir, readFileSync, writeFile } from "fs"
 import { PaperToTachiBackupConverter } from "../src/BackupConverters/PaperToTachiBackupConverter"
 import { PaperbackBackup } from "../src/Paperback/PaperbackBackup"
 import { TachiyomiBackupManager } from "../src/Tachiyomi/TachiyomiBackupManager"
@@ -28,6 +28,9 @@ convertionManager.conversion()
         backupManager.loadBackup(tachiyomiBackup)
         const protoGzBackup = backupManager.exportProtoGz()
 
+        mkdir('ressources/converted-backup-examples', (err) => {
+            if (err) throw err;
+        });
         writeFile(outputPath, protoGzBackup, (err) => {
             if (err) throw err;
 

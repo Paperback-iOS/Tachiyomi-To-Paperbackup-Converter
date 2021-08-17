@@ -7,7 +7,7 @@
  * ```
  */
 
-import { readFileSync, writeFile } from "fs"
+import { mkdir, readFileSync, writeFile } from "fs"
 import { TachiToPaperBackupConverter } from "../src/BackupConverters/TachiToPaperBackupConverter"
 import { TachiyomiBackupManager } from "../src/Tachiyomi/TachiyomiBackupManager"
 
@@ -23,6 +23,9 @@ const tachiyomiBackup = tachiyomiBackupManager.exportBackup()
 
 const convertionManager = new TachiToPaperBackupConverter(tachiyomiBackup)
 
+mkdir('ressources/converted-backup-examples', (err) => {
+    if (err) throw err;
+});
 convertionManager.conversion()
     .then((paperbackBackup) => {
         writeFile(outputPath, JSON.stringify(paperbackBackup), (err) => {

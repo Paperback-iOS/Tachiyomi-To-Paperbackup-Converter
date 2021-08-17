@@ -7,7 +7,7 @@
  * ```
  */
 
-import { readFileSync, writeFile } from "fs"
+import { mkdir, readFileSync, writeFile } from "fs"
 import { TachiyomiBackupManager } from "../src/Tachiyomi/TachiyomiBackupManager"
 
 const path = 'ressources/backup-examples/tachiyomi_six_titles_various_sources.proto.gz'
@@ -20,8 +20,11 @@ tachiyomiBackupManager.loadProtoGz(protoGzFile)
 
 const tachiyomiIBackup = tachiyomiBackupManager.exportIBackup()
 
-writeFile(outputPath, JSON.stringify(tachiyomiIBackup), (err) => {
+mkdir('ressources/exported-backup-examples', (err) => {
         if (err) throw err;
+    });
+writeFile(outputPath, JSON.stringify(tachiyomiIBackup), (err) => {
+    if (err) throw err;
 
-        console.log('Backup saved saved!');
+    console.log('Backup saved saved!');
 })
