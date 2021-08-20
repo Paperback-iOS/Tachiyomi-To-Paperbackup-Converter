@@ -90,17 +90,17 @@ export class TachiToPaperBackupConverter {
             // - chapterMarkers
 
             // We try to find a ConversionSource for the source the manga is from
-            const sourceConverter = conversionSourcesDict[manga.source.toString()]
+            const sourceConverter = (manga.source === undefined || manga.source === null) ? undefined : conversionSourcesDict[manga.source.toString()] // If source is undefined, we return undefined as we will never find a converter
 
             // If it does not exist, we wont be able to convert the manga
             if (sourceConverter === undefined) {
                 unconvertedMangas.push(manga)
-                console.log("Unsupported source " + manga.source.toString())
+                console.log("Unsupported source " + manga.source?.toString())
 
             } else {
                 // We convert the title
 
-                usedSources.add(manga.source.toString())
+                usedSources.add(manga.source!.toString())   // We known here that the source is not undefined
 
                 // We need to parse mangaInfo only *one* time 
                 // in order to use the same UUID for libraryManga and sourceManga
@@ -223,7 +223,7 @@ export class TachiToPaperBackupConverter {
 
         // Grab all of the tags
         let tags: {id: string, value: string}[] = []
-        for (let genre of manga.genre) {
+        for (let genre of (manga.genre ?? [])) {
             tags.push({id: genre, value: genre})
         }
 
@@ -249,13 +249,14 @@ export class TachiToPaperBackupConverter {
         }
     }
 
-    private parseStatus(tachiyomiStatus: number | Long.Long): PaperbackBackup.MangaStatus {
+    private parseStatus(tachiyomiStatus: number | Long.Long | null | undefined): PaperbackBackup.MangaStatus {
         // Tachiyomi status are defined here:
         // https://github.com/tachiyomiorg/tachiyomi/blob/master/app/src/main/java/eu/kanade/tachiyomi/source/model/SManga.kt
         // Paperback status here:
         // https://github.com/Paperback-iOS/extensions-common/blob/master/src/models/Manga/index.ts
 
         // The status can be a long so we need to convert it to a number
+        // If the status is undefined, `Number(tachiyomiStatus)` will be NaN, the switch will use the default value
         switch(Number(tachiyomiStatus)) {
             case 0: {
                 return PaperbackBackup.MangaStatus.UNKNOWN
@@ -285,7 +286,7 @@ export class TachiToPaperBackupConverter {
     private parseLibraryManga(manga: TachiyomiObjectModel.IBackupManga, mangaInfo: PaperbackBackup.MangaInfo, tabs: PaperbackBackup.LibraryTab[]): PaperbackBackup.LibraryManga {
         // The date conversion may fail if there is no history elements
         try {
-            var lastRead = this.convertTachiyomiDate(manga.history[0].lastRead)
+            var lastRead = this.convertTachiyomiDate(manga.history![0].lastRead!)
         } catch {
             var lastRead = this.defaultPaperbackDate
         }
@@ -293,14 +294,14 @@ export class TachiToPaperBackupConverter {
         // The date conversion may fail if there is no history elements
         try {
             // We use the fetch date of the latest chapter (position 0) assuming it should be the more recent
-            var lastUpdated = this.convertTachiyomiDate(manga.chapters[0].dateFetch)
+            var lastUpdated = this.convertTachiyomiDate(manga.chapters![0].dateFetch!)
         } catch {
             var lastUpdated = this.defaultPaperbackDate
         }
 
         // We need to parse categories/tabs for this manga
         let libraryTabs: PaperbackBackup.LibraryTab[] = []
-        for (const tachiyomiCategoryIndex of manga.categories) {
+        for (const tachiyomiCategoryIndex of (manga.categories ?? [])) {
             if (tachiyomiCategoryIndex < tabs.length) {
                 libraryTabs.push(tabs[tachiyomiCategoryIndex])
             } else {
@@ -326,8 +327,8 @@ export class TachiToPaperBackupConverter {
      */
     private parseSourceManga(manga: TachiyomiObjectModel.IBackupManga, mangaInfo: PaperbackBackup.MangaInfo, sourceConverter: AbstractConversionSource): PaperbackBackup.SourceManga {
         return {
-            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url, manga),
-            id:           uuidv4().toUpperCase(),                               // We need a new UUID
+            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "", manga),     // manga.url should not be undefined
+            id:           uuidv4().toUpperCase(),                                            // We need a new UUID
             manga:        mangaInfo,
             originalInfo: mangaInfo,
             sourceId:     sourceConverter.paperbackSourceId
@@ -343,7 +344,7 @@ export class TachiToPaperBackupConverter {
 
         const chapterMarkers: PaperbackBackup.ChapterMarker[] = []
 
-        for (const chapterHistory of manga.history) {
+        for (const chapterHistory of (manga.history ?? [])) {
             const chapterMarker = this.parseChapterMarker(chapterHistory, manga, sourceConverter)
             if (chapterMarker !== undefined) {
                 chapterMarkers.push(chapterMarker)
@@ -353,12 +354,12 @@ export class TachiToPaperBackupConverter {
         return chapterMarkers
     }
 
-    private parseChapterMarker(chapterHistory: TachiyomiObjectModel.IBackupHistory, manga: TachiyomiObjectModel.IBackupManga, sourceConverter: AbstractConversionSource): PaperbackBackup.ChapterMarker {
+    private parseChapterMarker(chapterHistory: TachiyomiObjectModel.IBackupHistory, manga: TachiyomiObjectModel.IBackupManga, sourceConverter: AbstractConversionSource): PaperbackBackup.ChapterMarker | undefined {
 
         // Get the corresponding chapter details for this history element `chapterHistory`
 
-        let chapter: TachiyomiObjectModel.IBackupChapter
-        for (let obj of manga.chapters) {
+        let chapter: TachiyomiObjectModel.IBackupChapter | undefined
+        for (let obj of (manga.chapters ?? [])) {
             if(chapterHistory.url == obj.url) {
                 chapter = obj
                 break
@@ -370,12 +371,26 @@ export class TachiToPaperBackupConverter {
             return undefined
         }
 
+        let dateUpload: number
+        try {
+            dateUpload = this.convertTachiyomiDate(chapter.dateUplaod!)
+        } catch (error) {
+            dateUpload = this.defaultPaperbackDate
+        }
+
+        let dateFetch: number
+        try {
+            dateFetch = this.convertTachiyomiDate(chapter.dateFetch!)
+        } catch (error) {
+            dateFetch = this.defaultPaperbackDate
+        }
+
         const chapterInfo: PaperbackBackup.ChapterInfo = {
             chapNum:      chapter.chapterNumber ?? -2,
-            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url, manga),
+            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "", manga), // The id should never be undefined
             volume:       -2,                                                    // TODO: try to remove this
-            id:           sourceConverter.parseTachiyomiChapterId(chapter.url, manga),
-            time:         this.convertTachiyomiDate(chapter.dateUplaod),
+            id:           sourceConverter.parseTachiyomiChapterId(chapter.url ?? "", manga), // The id should never be undefined
+            time:         dateUpload,
             sortingIndex: chapter.sourceOrder ?? -2,                             // TODO: try to remove this
             sourceId:     sourceConverter.paperbackSourceId,
             group:        chapter.scanlator ?? "",
@@ -384,11 +399,11 @@ export class TachiToPaperBackupConverter {
         }
 
         const chapterMarker: PaperbackBackup.ChapterMarker = {
-            totalPages: chapter.lastPageRead,                                    // This may be wrong?
-            lastPage:   chapter.lastPageRead,
+            totalPages: chapter.lastPageRead ?? 0,                                    // This may be wrong?
+            lastPage:   chapter.lastPageRead ?? 0,
             chapter:    chapterInfo,
             completed:  chapter.read ?? false,
-            time:       this.convertTachiyomiDate(chapter.dateFetch),            // Should this be the read time or the fetch time?
+            time:       dateFetch,            // Should this be the read time or the fetch time?
             hidden:     false
         }
 

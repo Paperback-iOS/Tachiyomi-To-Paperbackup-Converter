@@ -5,13 +5,11 @@ export class PaperbackBackupManager {
     private backup: PaperbackBackup.Backup
 
     constructor() {
-        this.loadEmptyBackup()
+        this.backup = this.returnEmptyBackup()
     }
 
-    /* Loading a backup */
-
-    loadEmptyBackup() {
-        this.backup = {
+    returnEmptyBackup(): PaperbackBackup.Backup {
+        return {
             library:             [],
             sourceMangas:        [],
             chapterMarkers:      [],
@@ -23,6 +21,8 @@ export class PaperbackBackupManager {
             activeSources:       []
         }
     }
+
+    /* Loading a backup */
 
     load(backup: PaperbackBackup.Backup) {
         this.backup = backup

@@ -9,14 +9,14 @@ export class TachiyomiBackupManager {
     private backup: TachiyomiObjectModel.Backup
 
     constructor() {
-        this.loadEmptyBackup()
+        this.backup = this.returnEmptyBackup()
+    }
+
+    returnEmptyBackup(): TachiyomiObjectModel.Backup {
+        return new TachiyomiObjectModel.Backup()
     }
 
     /* Loading a backup */
-
-    loadEmptyBackup() {
-        this.backup = new TachiyomiObjectModel.Backup()
-    }
 
     loadBackup(backup: TachiyomiObjectModel.Backup) {
         this.backup = backup
@@ -33,7 +33,7 @@ export class TachiyomiBackupManager {
         this.loadBackup(backup)
     }
 
-    loadProtoGz(protoGzBackup) {
+    loadProtoGz(protoGzBackup: Uint8Array) {
         const protoBackup = pako.inflate(protoGzBackup)
         this.loadProto(protoBackup)
     }
