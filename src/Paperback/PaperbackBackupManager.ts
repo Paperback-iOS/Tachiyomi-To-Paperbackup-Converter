@@ -1,3 +1,4 @@
+import { LightRepresentation } from "../LightRepresentation/LightRepresentation"
 import { PaperbackBackup } from "./PaperbackBackup"
 
 export class PaperbackBackupManager {
@@ -32,6 +33,58 @@ export class PaperbackBackupManager {
 
     exportBackup(): PaperbackBackup.Backup {
         return this.backup
+    }
+
+    exportLightRepresentation(): LightRepresentation.Backup {
+        const library: LightRepresentation.Title[] = []
+
+        const tabs: LightRepresentation.Tab[] = this.backup.tabs.map(this.parseLightRepresentationTab)
+        const sources: LightRepresentation.Source[] = this.backup.activeSources.map(this.parseLightRepresentationSource)
+
+        // Tabs parsing
+        for (const libraryTab of this.backup.tabs) {
+            tabs.push(this.parseLightRepresentationTab(libraryTab))
+        }
+
+        // Sources parsing
+        for (const activeSource of this.backup.activeSources) {
+            sources.push()
+        }
+
+        // Manga parsing
+        for (const libraryManga of this.backup.library) {
+            library.push({
+                titles:         libraryManga.manga.titles,
+                author:         libraryManga.manga.author,
+                artist:         libraryManga.manga.artist,
+                description:    libraryManga.manga.desc,
+                cover:          libraryManga.manga.image,
+                hentai:         libraryManga.manga.hentai,
+                tabs:           libraryManga.libraryTabs.map(this.parseLightRepresentationTab),
+                sources:        Source[]
+            })
+        }
+
+        return {
+            library:             Title[],
+            tabs:                Tab[],
+            sources:             Source[]
+        }
+    }
+
+    /* Light Representation helpers */
+    private parseLightRepresentationTab(libraryTab: PaperbackBackup.LibraryTab): LightRepresentation.Tab {
+        return {
+            id:     libraryTab.id,
+            name:   libraryTab.name
+        }
+    }
+
+    private parseLightRepresentationSource(activeSource: PaperbackBackup.ActiveSource): LightRepresentation.Source {
+        return {
+            id:     activeSource.id,
+            name:   activeSource.name
+        }
     }
 
     /* Helper functions */
