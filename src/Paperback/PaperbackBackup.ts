@@ -16,6 +16,7 @@ export namespace PaperbackBackup {
     }
     
     export interface LibraryManga {
+        // Shared manga id is in .manga.id
         lastRead:       number;
         manga:          MangaInfo;
         lastUpdated:    number;
@@ -25,6 +26,7 @@ export namespace PaperbackBackup {
     }
     
     export interface SourceManga {
+        // Shared manga id is in .manga.id
         mangaId:      string;
         id:           string;
         manga:        MangaInfo;

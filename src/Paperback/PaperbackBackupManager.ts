@@ -9,7 +9,19 @@ export class PaperbackBackupManager {
     private backup: PaperbackBackup.Backup
 
     constructor() {
-        this.backup = this.returnEmptyBackup()
+        //this.backup = this.returnEmptyBackup()
+
+        this.backup = {
+            library:             [],
+            sourceMangas:        [],
+            chapterMarkers:      [],
+            backupSchemaVersion: 3,
+            date:                650282810.89528203,
+            tabs:                [],
+            version:             "v0.6.0-b1.0.5",
+            sourceRepositories:  [],
+            activeSources:       []
+        }
     }
 
     returnEmptyBackup(): PaperbackBackup.Backup {
@@ -28,9 +40,30 @@ export class PaperbackBackupManager {
 
     /* Loading a backup */
 
-    load(backup: PaperbackBackup.Backup) {
+    /**
+     * Load a Paperback backup
+     * @param backup the {@link PaperbackBackup.Backup} object
+     */
+    loadBackup(backup: PaperbackBackup.Backup) {
         this.backup = backup
     }
+
+    /**
+     * Parse a stringified {@link PaperbackBackup.Backup} object and load it
+     * @param text the `string` containing a Paperback backup
+     * @note The function will throw if the `backupSchemaVersion` is unsupported 
+     */
+    loadText(text: string) {
+        const backup: PaperbackBackup.Backup = JSON.parse(text)
+
+        if (backup.backupSchemaVersion !== 3) {
+            throw new Error(`Unsupported backupSchemaVersion: ${backup.backupSchemaVersion}`)
+        }
+
+        this.loadBackup(backup)
+    }
+
+    // TODO: add loadBuffer
 
     /* Exporting a backup */
 
@@ -59,12 +92,14 @@ export class PaperbackBackupManager {
             // We will find these sources in `this.backup.sourceMangas`
             const sourcesIds = []
             for (const sourceManga of this.backup.sourceMangas) {
-                if (sourceManga.id === libraryManga.manga.id) {
+                // The correspondance is in sourceManga.manga.id and libraryManga.manga.id
+                if (sourceManga.manga.id === libraryManga.manga.id) {
                     sourcesIds.push(sourceManga.sourceId)
                 }
             }
 
             library.push({
+                id:             libraryManga.manga.id,
                 titles:         libraryManga.manga.titles,
                 author:         libraryManga.manga.author,
                 artist:         libraryManga.manga.artist,
@@ -83,7 +118,7 @@ export class PaperbackBackupManager {
 
         // Sources parsing
         for (const source of this.backup.activeSources) {
-            tabs[source.id] = source.name
+            sources[source.id] = source.name
         }
 
         return {

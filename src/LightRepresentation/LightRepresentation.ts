@@ -13,6 +13,7 @@ export namespace LightRepresentation {
     }
 
     export interface Title {
+        id:             string,
         titles:         string[],
         author:         string,
         artist:         string,
