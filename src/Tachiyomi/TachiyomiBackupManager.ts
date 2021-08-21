@@ -1,4 +1,5 @@
 import { Reader } from "protobufjs";
+import { LightRepresentation } from "../LightRepresentation/LightRepresentation";
 import { TachiyomiObjectModel } from "./proto/TachiyomiObjectModel"
 
 const pako = require('pako');
@@ -27,12 +28,19 @@ export class TachiyomiBackupManager {
         this.loadBackup(backup)
     }
 
-
+    /**
+     * Decode and load a `.proto` buffered backup
+     * @param protoBackup a `Reader | Uint8Array` object
+     */
     loadProto(protoBackup: Reader | Uint8Array) {
         const backup = TachiyomiObjectModel.Backup.decode(protoBackup)
         this.loadBackup(backup)
     }
 
+    /**
+     * Inflate, decode and load a `.proto.gz` buffered backup
+     * @param protoBackup a `Reader | Uint8Array` object
+     */
     loadProtoGz(protoGzBackup: Uint8Array) {
         const protoBackup = pako.inflate(protoGzBackup)
         this.loadProto(protoBackup)
@@ -63,6 +71,59 @@ export class TachiyomiBackupManager {
         const protoBackup = this.exportProto()
         const protoGzBackup = pako.gzip(protoBackup)
         return protoGzBackup
+    }
+
+    /**
+     * @returns A {@link LightRepresentation} of the backup, easily exploitable to display the main content of the backup.
+     */
+     exportLightRepresentation(): LightRepresentation.Backup {
+        const library: LightRepresentation.Title[] = []
+
+        const tabs: {[id: string]: string} = {}
+        const sources: {[id: string]: string} = {}
+
+        // Manga parsing
+        for (const manga of this.backup.backupManga) {
+
+            let tabsIds: string[] = []
+            if (manga.categories != undefined) {
+                tabsIds = manga.categories.map(id => id.toString())
+            }
+
+            // In the backup, a Tachiyomi manga is associated with an unique source
+            const sourcesIds = (manga.source) ? [manga.source.toString()] : [""]
+
+            library.push({
+                id:             manga.url ?? "",
+                titles:         [manga.title ?? ""],
+                author:         manga.author ?? "",
+                artist:         manga.artist ?? "",
+                description:    manga.description ??  "",
+                cover:          manga.thumbnailUrl ?? "",
+                hentai:         false,                  // Does not exist in the backup
+                tabsIds:        tabsIds,
+                sourcesIds:     sourcesIds
+            })
+        }
+
+        // Tabs/categories parsing
+        for (let index = 0; index < this.backup.backupCategories.length; index++) {
+            tabs[index] = this.backup.backupCategories[index].name ?? "unnamed"
+        }
+
+        // Sources parsing
+        for (const source of this.backup.backupSources) {
+            if (source.sourceId != undefined) {
+                const id = source.sourceId!.toString()
+                sources[id] = source.name ?? id  // If the source name does not exist, we use its id
+            }
+        }
+
+        return {
+            library:             library,
+            tabs:                tabs,
+            sources:             sources
+        }
     }
 
     /* Helper functions */
