@@ -21,7 +21,7 @@ import { TachiyomiBackupManager } from "../Tachiyomi/TachiyomiBackupManager";
  */
 export class PaperToTachiBackupConverter {
 
-    tachiyomiBackup: TachiyomiObjectModel.Backup
+    //tachiyomiBackup: TachiyomiObjectModel.Backup
     paperbackBackup: PaperbackBackup.Backup
 
     // TODO: change default date
@@ -331,7 +331,7 @@ export class PaperToTachiBackupConverter {
      * @param tabs the list of all tabs present in the backup, identifiables by index
      * @returns The generated {@link PaperbackBackup.LibraryManga} object
      */
-    private parseBackupManga(libraryManga: PaperbackBackup.LibraryManga, sourceManga: PaperbackBackup.SourceManga, categories: Dictionary<number>, converter): TachiyomiObjectModel.IBackupManga {
+    private parseBackupManga(libraryManga: PaperbackBackup.LibraryManga, sourceManga: PaperbackBackup.SourceManga, categories: Dictionary<number>, converter: AbstractConversionSource): TachiyomiObjectModel.IBackupManga {
         
         console.log("parsing source id")
         console.log(converter.getMainTachiyomiSourceId())
@@ -397,7 +397,7 @@ export class PaperToTachiBackupConverter {
      */
     private parseSourceManga(manga: TachiyomiObjectModel.IBackupManga, mangaInfo: PaperbackBackup.MangaInfo, sourceConverter: AbstractConversionSource): PaperbackBackup.SourceManga {
         return {
-            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url, manga),
+            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "undefined", manga),   // TO check
             id:           uuidv4().toUpperCase(),                               // We need a new UUID
             manga:        mangaInfo,
             originalInfo: mangaInfo,
@@ -410,11 +410,12 @@ export class PaperToTachiBackupConverter {
      * @param sourceConverter a conversionSource that should handle the source the manga come from
      * @returns The generated {@linkcode PaperbackBackup.ChapterMarker} list
      */
+    /*
     private parseChapterMarkers(manga: TachiyomiObjectModel.IBackupManga, sourceConverter: AbstractConversionSource): PaperbackBackup.ChapterMarker[] {
 
         const chapterMarkers: PaperbackBackup.ChapterMarker[] = []
 
-        for (const chapterHistory of manga.history) {
+        for (const chapterHistory of manga.history ?? []) {
             const chapterMarker = this.parseChapterMarker(chapterHistory, manga, sourceConverter)
             if (chapterMarker !== undefined) {
                 chapterMarkers.push(chapterMarker)
@@ -423,13 +424,15 @@ export class PaperToTachiBackupConverter {
 
         return chapterMarkers
     }
+    */
 
-    private parseChapterMarker(chapterHistory: TachiyomiObjectModel.IBackupHistory, manga: TachiyomiObjectModel.IBackupManga, sourceConverter: AbstractConversionSource): PaperbackBackup.ChapterMarker {
+    /*
+    private parseChapterMarker(chapterHistory: TachiyomiObjectModel.IBackupHistory, manga: TachiyomiObjectModel.IBackupManga, sourceConverter: AbstractConversionSource): PaperbackBackup.ChapterMarker | undefined{
 
         // Get the corresponding chapter details for this history element `chapterHistory`
 
-        let chapter: TachiyomiObjectModel.IBackupChapter
-        for (let obj of manga.chapters) {
+        let chapter: TachiyomiObjectModel.IBackupChapter | undefined
+        for (let obj of manga.chapters ?? []) {
             if(chapterHistory.url == obj.url) {
                 chapter = obj
                 break
@@ -441,12 +444,19 @@ export class PaperToTachiBackupConverter {
             return undefined
         }
 
+        let dateUpload: number
+        try {
+            dateUpload = this.convertTachiyomiDate(chapter.dateUplaod!)
+        } catch (error) {
+            dateUpload = this.defaultTachiyomiDate
+        }
+
         const chapterInfo: PaperbackBackup.ChapterInfo = {
             chapNum:      chapter.chapterNumber ?? -2,
-            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url, manga),
+            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "", manga),
             volume:       -2,                                                    // TODO: try to remove this
-            id:           sourceConverter.parseTachiyomiChapterId(chapter.url, manga),
-            time:         this.convertTachiyomiDate(chapter.dateUplaod),
+            id:           sourceConverter.parseTachiyomiChapterId(chapter.url ?? "", manga),
+            time:         dateUpload,
             sortingIndex: chapter.sourceOrder ?? -2,                             // TODO: try to remove this
             sourceId:     sourceConverter.paperbackSourceId,
             group:        chapter.scanlator ?? "",
@@ -455,8 +465,8 @@ export class PaperToTachiBackupConverter {
         }
 
         const chapterMarker: PaperbackBackup.ChapterMarker = {
-            totalPages: chapter.lastPageRead,                                    // This may be wrong?
-            lastPage:   chapter.lastPageRead,
+            totalPages: chapter.lastPageRead ?? 0,                                    // This may be wrong?
+            lastPage:   chapter.lastPageRead ?? 0,
             chapter:    chapterInfo,
             completed:  chapter.read ?? false,
             time:       this.convertTachiyomiDate(chapter.dateFetch),            // Should this be the read time or the fetch time?
@@ -465,8 +475,9 @@ export class PaperToTachiBackupConverter {
 
         return chapterMarker
     }
+    */
 
-    private parseActiveSource(sourceData: PaperbackRepository.sourceData, repository: PaperbackBackup.SourceRepository): PaperbackBackup.ActiveSource {
+    //private parseActiveSource(sourceData: PaperbackRepository.sourceData, repository: PaperbackBackup.SourceRepository): PaperbackBackup.ActiveSource {
         /*
             We may want to use:
                 contentRating:  sourceData.contentRating ?? "EVERYONE",
@@ -475,6 +486,7 @@ export class PaperToTachiBackupConverter {
                 contentRating:  "EVERYONE",
             for every sources
         */
+       /*
         return {
             author:         sourceData.author,
             desc:           sourceData.desc,
@@ -489,4 +501,6 @@ export class PaperToTachiBackupConverter {
             name:           sourceData.name
         }
     }
+
+    */
 }

@@ -118,6 +118,7 @@ export class TachiToPaperBackupConverter {
         }
 
         // Then we add activeSources we found and their corresponding repositories
+        /*
         for (const tachiyomiSourceId of usedSources) {
 
             const converter = conversionSourcesDict[tachiyomiSourceId]
@@ -145,6 +146,7 @@ export class TachiToPaperBackupConverter {
                 }
             }
         }
+        */
                 
         return paperbackBackupManager.exportBackup()
     }
