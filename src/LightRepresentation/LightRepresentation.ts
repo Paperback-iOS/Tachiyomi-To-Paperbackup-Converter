@@ -1,9 +1,15 @@
 export namespace LightRepresentation {
 
+    /**
+     * A simple representation of the main content of a backup. Easily exploitable to display the content of a backup.
+     * @param library - a list of titles
+     * @param tabs - a dictionary of tabId: tabName
+     * @param sources - a dictionary of sourceId: sourceName
+     */
     export interface Backup {
-        library:             Title[],
-        tabs:                Tab[],
-        sources:             Source[]
+        library:        Title[],
+        tabs:           {[id: string]: string},
+        sources:        {[id: string]: string}
     }
 
     export interface Title {
@@ -13,17 +19,8 @@ export namespace LightRepresentation {
         description:    string,
         cover:          string,
         hentai:         boolean,
-        tabs:           Tab[],
-        sources:        Source[]
+        tabsIds:        string[],
+        sourcesIds:     string[]
     }
 
-    export interface Source {
-        id:             string,
-        name:           string
-    }
-
-    export interface Tab {
-        id:             string,
-        name:           string
-    }
 }

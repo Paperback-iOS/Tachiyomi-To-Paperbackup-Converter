@@ -1,5 +1,8 @@
 export namespace PaperbackBackup {
 
+    /**
+     * TODO: info about the backup version
+     */
     export interface Backup {
         library:             LibraryManga[];
         sourceMangas:        SourceManga[];

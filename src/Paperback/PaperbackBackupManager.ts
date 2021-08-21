@@ -1,6 +1,9 @@
 import { LightRepresentation } from "../LightRepresentation/LightRepresentation"
 import { PaperbackBackup } from "./PaperbackBackup"
 
+/**
+ * TODO: info about the version
+ */
 export class PaperbackBackupManager {
     
     private backup: PaperbackBackup.Backup
@@ -35,24 +38,32 @@ export class PaperbackBackupManager {
         return this.backup
     }
 
+    /**
+     * @returns A {@link LightRepresentation} of the backup, easily exploitable to display the main content of the backup.
+     */
     exportLightRepresentation(): LightRepresentation.Backup {
         const library: LightRepresentation.Title[] = []
 
-        const tabs: LightRepresentation.Tab[] = this.backup.tabs.map(this.parseLightRepresentationTab)
-        const sources: LightRepresentation.Source[] = this.backup.activeSources.map(this.parseLightRepresentationSource)
-
-        // Tabs parsing
-        for (const libraryTab of this.backup.tabs) {
-            tabs.push(this.parseLightRepresentationTab(libraryTab))
-        }
-
-        // Sources parsing
-        for (const activeSource of this.backup.activeSources) {
-            sources.push()
-        }
+        const tabs: {[id: string]: string} = {}
+        const sources: {[id: string]: string} = {}
 
         // Manga parsing
         for (const libraryManga of this.backup.library) {
+
+            const tabsIds = []
+            for (const libraryTab of libraryManga.libraryTabs) {
+                tabsIds.push(libraryTab.id)
+            }
+
+            // There can be multiple merged sources for this title
+            // We will find these sources in `this.backup.sourceMangas`
+            const sourcesIds = []
+            for (const sourceManga of this.backup.sourceMangas) {
+                if (sourceManga.id === libraryManga.manga.id) {
+                    sourcesIds.push(sourceManga.sourceId)
+                }
+            }
+
             library.push({
                 titles:         libraryManga.manga.titles,
                 author:         libraryManga.manga.author,
@@ -60,30 +71,25 @@ export class PaperbackBackupManager {
                 description:    libraryManga.manga.desc,
                 cover:          libraryManga.manga.image,
                 hentai:         libraryManga.manga.hentai,
-                tabs:           libraryManga.libraryTabs.map(this.parseLightRepresentationTab),
-                sources:        Source[]
+                tabsIds:        tabsIds,
+                sourcesIds:     sourcesIds
             })
         }
 
-        return {
-            library:             Title[],
-            tabs:                Tab[],
-            sources:             Source[]
+        // Tabs parsing
+        for (const tab of this.backup.tabs) {
+            tabs[tab.id] = tab.name
         }
-    }
 
-    /* Light Representation helpers */
-    private parseLightRepresentationTab(libraryTab: PaperbackBackup.LibraryTab): LightRepresentation.Tab {
-        return {
-            id:     libraryTab.id,
-            name:   libraryTab.name
+        // Sources parsing
+        for (const source of this.backup.activeSources) {
+            tabs[source.id] = source.name
         }
-    }
 
-    private parseLightRepresentationSource(activeSource: PaperbackBackup.ActiveSource): LightRepresentation.Source {
         return {
-            id:     activeSource.id,
-            name:   activeSource.name
+            library:             library,
+            tabs:                tabs,
+            sources:             sources
         }
     }
 
