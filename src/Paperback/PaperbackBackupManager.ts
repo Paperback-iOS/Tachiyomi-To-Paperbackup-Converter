@@ -2,26 +2,14 @@ import { LightRepresentation } from "../LightRepresentation/LightRepresentation"
 import { PaperbackBackup } from "./PaperbackBackup"
 
 /**
- * TODO: info about the version
+ * A manager for a `backupSchemaVersion 3` Paperback backup
  */
 export class PaperbackBackupManager {
     
     private backup: PaperbackBackup.Backup
 
     constructor() {
-        //this.backup = this.returnEmptyBackup()
-
-        this.backup = {
-            library:             [],
-            sourceMangas:        [],
-            chapterMarkers:      [],
-            backupSchemaVersion: 3,
-            date:                650282810.89528203,
-            tabs:                [],
-            version:             "v0.6.0-b1.0.5",
-            sourceRepositories:  [],
-            activeSources:       []
-        }
+        this.backup = this.returnEmptyBackup()
     }
 
     returnEmptyBackup(): PaperbackBackup.Backup {
@@ -42,7 +30,7 @@ export class PaperbackBackupManager {
 
     /**
      * Load a Paperback backup
-     * @param backup the {@link PaperbackBackup.Backup} object
+     * @param backup - a {@link PaperbackBackup.Backup} object
      */
     loadBackup(backup: PaperbackBackup.Backup) {
         this.backup = backup
@@ -51,7 +39,7 @@ export class PaperbackBackupManager {
     /**
      * Parse a stringified {@link PaperbackBackup.Backup} object and load it
      * @param text the `string` containing a Paperback backup
-     * @note The function will throw if the `backupSchemaVersion` is unsupported 
+     * @remarks The function will throw if the `backupSchemaVersion` is unsupported 
      */
     loadText(text: string) {
         const backup: PaperbackBackup.Backup = JSON.parse(text)
@@ -63,7 +51,8 @@ export class PaperbackBackupManager {
         this.loadBackup(backup)
     }
 
-    // TODO: add loadBuffer
+    // We don't allow to load a File object as that would require to mark some functions as async
+    // Loading a Buffered backup is not useful for Paperback backups
 
     /* Exporting a backup */
 

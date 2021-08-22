@@ -30,7 +30,7 @@ export class TachiyomiBackupManager {
 
     /**
      * Decode and load a `.proto` buffered backup
-     * @param protoBackup a `Reader | Uint8Array` object
+     * @param protoBackup - a `Reader | Uint8Array` object
      */
     loadProto(protoBackup: Reader | Uint8Array) {
         const backup = TachiyomiObjectModel.Backup.decode(protoBackup)
@@ -39,7 +39,7 @@ export class TachiyomiBackupManager {
 
     /**
      * Inflate, decode and load a `.proto.gz` buffered backup
-     * @param protoBackup a `Reader | Uint8Array` object
+     * @param protoBackup - a `Reader | Uint8Array` object
      */
     loadProtoGz(protoGzBackup: Uint8Array) {
         const protoBackup = pako.inflate(protoGzBackup)
@@ -52,13 +52,17 @@ export class TachiyomiBackupManager {
         return this.backup
     }
 
-    exportIBackup() {
+    exportIBackup(): TachiyomiObjectModel.IBackup {
         return TachiyomiObjectModel.Backup.toObject(this.backup)
     }
 
+    /**
+     * Encode and export the `.proto` buffered backup
+     * @returns a {@link Uint8Array}
+     */
     exportProto(): Uint8Array {
-        // WARNING including non empty backupManga.categories result in an error
-        // "Expecting wire type 0 byt found 2"
+        // WARNING: including non empty backupManga.categories result in an error
+        // "Expecting wire type 0 byt found 2" when the backup is restored on Tachiyomi
 
         const writer = TachiyomiObjectModel.Backup.encode(this.backup)
         // We must call finish() to obtain an usable Buffer
@@ -67,14 +71,18 @@ export class TachiyomiBackupManager {
         return buffer
     }
 
-    exportProtoGz() {
+    /**
+     * Encode, gzip and export the `.proto` buffered backup
+     * @returns a {@link Uint8Array}
+     */
+    exportProtoGz(): Uint8Array {
         const protoBackup = this.exportProto()
         const protoGzBackup = pako.gzip(protoBackup)
         return protoGzBackup
     }
 
     /**
-     * @returns A {@link LightRepresentation} of the backup, easily exploitable to display the main content of the backup.
+     * @returns A {@link LightRepresentation} of the backup, easily exploitable to display the principal content of the backup.
      */
      exportLightRepresentation(): LightRepresentation.Backup {
         const library: LightRepresentation.Title[] = []
@@ -90,7 +98,7 @@ export class TachiyomiBackupManager {
                 tabsIds = manga.categories.map(id => id.toString())
             }
 
-            // In the backup, a Tachiyomi manga is associated with an unique source
+            // In a Tachiyomi backup, a manga is associated with an unique source
             const sourcesIds = (manga.source) ? [manga.source.toString()] : [""]
 
             library.push({
@@ -100,7 +108,7 @@ export class TachiyomiBackupManager {
                 artist:         manga.artist ?? "",
                 description:    manga.description ??  "",
                 cover:          manga.thumbnailUrl ?? "",
-                hentai:         false,                  // Does not exist in the backup
+                hentai:         false,                      // Does not exist in the backup
                 tabsIds:        tabsIds,
                 sourcesIds:     sourcesIds
             })
@@ -128,12 +136,12 @@ export class TachiyomiBackupManager {
 
     /* Helper functions */
 
-    appendBackupManga(backupManga: TachiyomiObjectModel.IBackupManga): void {
+    appendBackupManga(backupManga: TachiyomiObjectModel.IBackupManga) {
         const backupMangaObject = TachiyomiObjectModel.BackupManga.create(backupManga)
         this.backup.backupManga.push(backupMangaObject)
     }
 
-    appendCategory(category: TachiyomiObjectModel.IBackupCategory): void {
+    appendCategory(category: TachiyomiObjectModel.IBackupCategory) {
         const categoryObject = TachiyomiObjectModel.BackupCategory.create(category)
         this.backup.backupCategories.push(categoryObject)
     }

@@ -15,7 +15,7 @@ export abstract class AbstractConversionSource {
      * By default, the first one will be used.
      * If it exist, the `all` version of the source should be placed at the beginning.
      * 
-     * Tachiyomi ids are available in {@link https://raw.githubusercontent.com/tachiyomiorg/tachiyomi-extensions/repo/index.json tachiyomi-extensions index}
+     * Tachiyomi ids are available in the {@link https://raw.githubusercontent.com/tachiyomiorg/tachiyomi-extensions/repo/index.json tachiyomi-extensions index}
      */
     abstract tachiyomiSourceIds: string[]
 
@@ -24,13 +24,10 @@ export abstract class AbstractConversionSource {
      */
     abstract paperbackSourceId: string
 
-    // TODO: are these elements used?
-    abstract tachiyomiSourceName: string
-    abstract paperbackSourceName: string
-
     /**
-     * A {@link PaperbackBackup.SourceRepository} object of a repository containing hte source.
+     * A {@link PaperbackBackup.SourceRepository} object of a repository containing the source.
      * Should be a constant from {@link PaperbackRepository}
+     * It will be used to make a request to get the repository versioning file, to have additional info about the source
      */
     abstract paperbackSourceRepository: PaperbackBackup.SourceRepository
 
@@ -90,7 +87,12 @@ export abstract class AbstractConversionSource {
      */
     abstract parsePaperbackChapterId(paperbackId: string, mangaInfo: PaperbackBackup.SourceManga): string
 
-    // TODO: handle languages better?
+    /**
+     * Return the first Tachiyomi source id
+     * @remarks The first id will be used during the conversion from Paperback to Tachiyomi, independently of its language. 
+     * Paperback have indeed only one multi-languages source when Tachiyomi use a different source for each language.
+     * @returns a Tachiyomi source id
+     */
     getMainTachiyomiSourceId(): string {
         return this.tachiyomiSourceIds[0]
     }

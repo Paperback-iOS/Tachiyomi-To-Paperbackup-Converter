@@ -9,7 +9,6 @@ import { getConversionSourcesList } from "../ConversionSources/ConversionSources
 import { Dictionary } from "lodash";
 import { v4 as uuidv4 } from 'uuid';
 
-
 /**
  * Manage conversion from {@link TachiyomiObjectModel.Backup} to {@link PaperbackBackup.Backup}
  * 
@@ -17,9 +16,13 @@ import { v4 as uuidv4 } from 'uuid';
  */
 export class TachiToPaperBackupConverter {
 
+    // The backup that will be converted
     tachiyomiBackup: TachiyomiObjectModel.Backup
 
-    // TODO: change default date
+
+    paperbackTabs: PaperbackBackup.LibraryTab[] = []
+
+    // Default date, used when a date conversion failed
     defaultPaperbackDate = 650645332.25231397
 
     /**
@@ -32,7 +35,7 @@ export class TachiToPaperBackupConverter {
     /**
      * Handle the conversion of {@link tachiyomiBackup}
      * 
-     * @returns the a promise resolving into the converted Paperback backup object
+     * @returns a promise resolving into the converted Paperback backup object
      */
     async conversion(): Promise<PaperbackBackup.Backup> {
 
@@ -44,10 +47,10 @@ export class TachiToPaperBackupConverter {
         // {
         //     tachiyomiSourceId: conversionSource   
         // }
-        let conversionSourcesDict = this.createConversionSourcesDict()
+        let conversionSourcesDict: Dictionary<AbstractConversionSource> = this.createConversionSourcesDict()
 
         // Contains tachiyomiSourceId of source that were found during the conversion
-        // It is used to add sources and source repositories in the backup at the end of the conversion
+        // It will be use to add sources and source repositories in the backup at the end of the conversion
         let usedSources: Set<string> = new Set()
 
         // Contains versioning files of used source repositories
@@ -64,20 +67,22 @@ export class TachiToPaperBackupConverter {
         // The list of all categories is present in the Tachiyomi backup in tachiyomiBackup.backupCategories
         // The list of all categories is present in the Paperback backup in paperbackBackup.tabs
         // Tachiyomi categories are identified by an integer.
-        // tabs[0] should be the converted Paperback tab for tge corresponding Tachiyomi category `0`
-        let tabs: PaperbackBackup.LibraryTab[] = []
+        // tabs[0] should be the converted Paperback tab for the corresponding Tachiyomi category `0`
+        // We use a global variable as we will access tabs from other methods
+        this.paperbackTabs = []
 
         // We keep a list of the manga that could not be converted
-        // TODO: add a reason (ex: unsupported source)
-        let unconvertedMangas: TachiyomiObjectModel.IBackupManga[] = []
+        // We could add a more explicit reason (ex: unsupported source)
+        //let unconvertedMangas: TachiyomiObjectModel.IBackupManga[] = []
+        let unconvertedMangas: {tachiyomiMangaId: string, tachiyomiSourceId: string}[] = []
 
         // We will first create the list of all categories in the original backup
         // and add them to the converted one
         for (const category of this.tachiyomiBackup.backupCategories) {
             // We will use tabs.length as sortOrder
-            const paperbackTab = this.parseCategory(category, tabs.length)
+            const paperbackTab = this.parseCategory(category, this.paperbackTabs.length)
 
-            tabs.push(paperbackTab)
+            this.paperbackTabs.push(paperbackTab)
             paperbackBackupManager.appendLibraryTab(paperbackTab)
         }
 
@@ -94,7 +99,10 @@ export class TachiToPaperBackupConverter {
 
             // If it does not exist, we wont be able to convert the manga
             if (sourceConverter === undefined) {
-                unconvertedMangas.push(manga)
+                unconvertedMangas.push({
+                    tachiyomiMangaId: manga.url ?? 'undefined',
+                    tachiyomiSourceId: manga.source?.toString() ?? 'undefined'
+                })
                 console.log("Unsupported source " + manga.source?.toString())
 
             } else {
@@ -106,7 +114,7 @@ export class TachiToPaperBackupConverter {
                 // in order to use the same UUID for libraryManga and sourceManga
                 const mangaInfo = this.parseMangaInfo(manga)
             
-                const libraryManga = this.parseLibraryManga(manga, mangaInfo, tabs)
+                const libraryManga = this.parseLibraryManga(manga, mangaInfo)
                 paperbackBackupManager.appendLibraryManga(libraryManga)
 
                 const sourceManga = this.parseSourceManga(manga, mangaInfo, sourceConverter)
@@ -118,7 +126,7 @@ export class TachiToPaperBackupConverter {
         }
 
         // Then we add activeSources we found and their corresponding repositories
-        /*
+        
         for (const tachiyomiSourceId of usedSources) {
 
             const converter = conversionSourcesDict[tachiyomiSourceId]
@@ -146,8 +154,7 @@ export class TachiToPaperBackupConverter {
                 }
             }
         }
-        */
-                
+        
         return paperbackBackupManager.exportBackup()
     }
 
@@ -185,7 +192,6 @@ export class TachiToPaperBackupConverter {
 
         if (isNaN(date)) {
             // Default value
-            // TODO: change to the current date
             return this.defaultPaperbackDate
         }
 
@@ -285,7 +291,7 @@ export class TachiToPaperBackupConverter {
      * @param tabs the list of all tabs present in the backup, identifiables by index
      * @returns The generated {@link PaperbackBackup.LibraryManga} object
      */
-    private parseLibraryManga(manga: TachiyomiObjectModel.IBackupManga, mangaInfo: PaperbackBackup.MangaInfo, tabs: PaperbackBackup.LibraryTab[]): PaperbackBackup.LibraryManga {
+    private parseLibraryManga(manga: TachiyomiObjectModel.IBackupManga, mangaInfo: PaperbackBackup.MangaInfo): PaperbackBackup.LibraryManga {
         // The date conversion may fail if there is no history elements
         try {
             var lastRead = this.convertTachiyomiDate(manga.history![0].lastRead!)
@@ -304,8 +310,8 @@ export class TachiToPaperBackupConverter {
         // We need to parse categories/tabs for this manga
         let libraryTabs: PaperbackBackup.LibraryTab[] = []
         for (const tachiyomiCategoryIndex of (manga.categories ?? [])) {
-            if (tachiyomiCategoryIndex < tabs.length) {
-                libraryTabs.push(tabs[tachiyomiCategoryIndex])
+            if (tachiyomiCategoryIndex < this.paperbackTabs.length) {
+                libraryTabs.push(this.paperbackTabs[tachiyomiCategoryIndex])
             } else {
                 console.log(`The index ${tachiyomiCategoryIndex} does not exist in tabs`)
             }
