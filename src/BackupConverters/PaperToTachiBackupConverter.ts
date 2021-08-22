@@ -4,8 +4,10 @@ import { PaperbackBackup } from "../Paperback/PaperbackBackup";
 import { AbstractConversionSource } from "../ConversionSources/AbstractConversionSource";
 import { getConversionSourcesList } from "../ConversionSources/ConversionSources";
 
-import { Dictionary } from "lodash";
 import { TachiyomiBackupManager } from "../Tachiyomi/TachiyomiBackupManager";
+
+import { Dictionary } from "lodash";
+import Long from "long";
 
 /**
  * Manage conversion from {@link PaperbackBackup.Backup} to {@link TachiyomiObjectModel.Backup} 
@@ -271,11 +273,15 @@ export class PaperToTachiBackupConverter {
             }
         }
 
+        // sourceId should have a type: `Number | Long.Long`. 
+        // Or Tachiyomi are using source ids (ex: 2499283573021220255 for md) that are bigger that the maximal Number, they are thus changed during the encoding (ex: 2499283573021220255 becomes 2499283573021220352)
+        // To prevent this issue, we won't use a Number but a [Long](https://www.npmjs.com/package/long) element.
+
+        // NOTE, passing directly a string to the encoder works in node but not in the browserified version.
+        const sourceId = Long.fromString(converter.getMainTachiyomiSourceId())
+
         return {
-            // Source should be a `Number | Long.Long`. Or numbers are changed during the encoding (ex: 2499283573021220255 becomes 2499283573021220352)
-            // The proto encoder don't mind if we give a string instead of a `Number | Long.Long`, which happen to solve the issue.
-            //@ts-ignore
-            source: converter.getMainTachiyomiSourceId(),
+            source: sourceId,
             url: converter.parsePaperbackMangaId(sourceManga.mangaId, sourceManga),
             title: (libraryManga.manga.titles.length > 0) ? libraryManga.manga.titles[0] : "untitled",
             artist: libraryManga.manga.artist,
