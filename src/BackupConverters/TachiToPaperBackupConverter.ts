@@ -198,7 +198,7 @@ export class TachiToPaperBackupConverter {
         // We convert the date in seconds
         date = date / 1000
 
-        // We add 31 years
+        // We subtract 31 years
         return date - 31556926 * 31
     }
 
@@ -395,11 +395,11 @@ export class TachiToPaperBackupConverter {
 
         const chapterInfo: PaperbackBackup.ChapterInfo = {
             chapNum:      chapter.chapterNumber ?? -2,
-            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "", manga), // The id should never be undefined
-            volume:       -2,                                                    // TODO: try to remove this
+            mangaId:      sourceConverter.parseTachiyomiMangaId(manga.url ?? "", manga),     // The id should never be undefined
+            volume:       -2,                                                                // Required field
             id:           sourceConverter.parseTachiyomiChapterId(chapter.url ?? "", manga), // The id should never be undefined
             time:         dateUpload,
-            sortingIndex: chapter.sourceOrder ?? -2,                             // TODO: try to remove this
+            sortingIndex: chapter.sourceOrder ?? -2,
             sourceId:     sourceConverter.paperbackSourceId,
             group:        chapter.scanlator ?? "",
             langCode:     "_unknown",
@@ -407,11 +407,11 @@ export class TachiToPaperBackupConverter {
         }
 
         const chapterMarker: PaperbackBackup.ChapterMarker = {
-            totalPages: chapter.lastPageRead ?? 0,                                    // This may be wrong?
+            totalPages: chapter.lastPageRead ?? 0,  // This may be wrong?
             lastPage:   chapter.lastPageRead ?? 0,
             chapter:    chapterInfo,
             completed:  chapter.read ?? false,
-            time:       dateFetch,            // Should this be the read time or the fetch time?
+            time:       dateFetch,                  // Should this be the read time or the fetch time?
             hidden:     false
         }
 
