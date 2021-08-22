@@ -89,27 +89,27 @@ $root.TachiyomiObjectModel = (function() {
 
         /**
          * BackupManga artist.
-         * @member {string} artist
+         * @member {string|null|undefined} artist
          * @memberof TachiyomiObjectModel.BackupManga
          * @instance
          */
-        BackupManga.prototype.artist = "";
+        BackupManga.prototype.artist = null;
 
         /**
          * BackupManga author.
-         * @member {string} author
+         * @member {string|null|undefined} author
          * @memberof TachiyomiObjectModel.BackupManga
          * @instance
          */
-        BackupManga.prototype.author = "";
+        BackupManga.prototype.author = null;
 
         /**
          * BackupManga description.
-         * @member {string} description
+         * @member {string|null|undefined} description
          * @memberof TachiyomiObjectModel.BackupManga
          * @instance
          */
-        BackupManga.prototype.description = "";
+        BackupManga.prototype.description = null;
 
         /**
          * BackupManga genre.
@@ -129,11 +129,11 @@ $root.TachiyomiObjectModel = (function() {
 
         /**
          * BackupManga thumbnailUrl.
-         * @member {string} thumbnailUrl
+         * @member {string|null|undefined} thumbnailUrl
          * @memberof TachiyomiObjectModel.BackupManga
          * @instance
          */
-        BackupManga.prototype.thumbnailUrl = "";
+        BackupManga.prototype.thumbnailUrl = null;
 
         /**
          * BackupManga dateAdded.
@@ -198,6 +198,53 @@ $root.TachiyomiObjectModel = (function() {
          * @instance
          */
         BackupManga.prototype.history = $util.emptyArray;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * BackupManga _artist.
+         * @member {"artist"|undefined} _artist
+         * @memberof TachiyomiObjectModel.BackupManga
+         * @instance
+         */
+        Object.defineProperty(BackupManga.prototype, "_artist", {
+            get: $util.oneOfGetter($oneOfFields = ["artist"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * BackupManga _author.
+         * @member {"author"|undefined} _author
+         * @memberof TachiyomiObjectModel.BackupManga
+         * @instance
+         */
+        Object.defineProperty(BackupManga.prototype, "_author", {
+            get: $util.oneOfGetter($oneOfFields = ["author"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * BackupManga _description.
+         * @member {"description"|undefined} _description
+         * @memberof TachiyomiObjectModel.BackupManga
+         * @instance
+         */
+        Object.defineProperty(BackupManga.prototype, "_description", {
+            get: $util.oneOfGetter($oneOfFields = ["description"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
+
+        /**
+         * BackupManga _thumbnailUrl.
+         * @member {"thumbnailUrl"|undefined} _thumbnailUrl
+         * @memberof TachiyomiObjectModel.BackupManga
+         * @instance
+         */
+        Object.defineProperty(BackupManga.prototype, "_thumbnailUrl", {
+            get: $util.oneOfGetter($oneOfFields = ["thumbnailUrl"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new BackupManga instance using the specified properties.
@@ -400,6 +447,7 @@ $root.TachiyomiObjectModel = (function() {
         BackupManga.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            var properties = {};
             if (message.source != null && message.hasOwnProperty("source"))
                 if (!$util.isInteger(message.source) && !(message.source && $util.isInteger(message.source.low) && $util.isInteger(message.source.high)))
                     return "source: integer|Long expected";
@@ -409,15 +457,21 @@ $root.TachiyomiObjectModel = (function() {
             if (message.title != null && message.hasOwnProperty("title"))
                 if (!$util.isString(message.title))
                     return "title: string expected";
-            if (message.artist != null && message.hasOwnProperty("artist"))
+            if (message.artist != null && message.hasOwnProperty("artist")) {
+                properties._artist = 1;
                 if (!$util.isString(message.artist))
                     return "artist: string expected";
-            if (message.author != null && message.hasOwnProperty("author"))
+            }
+            if (message.author != null && message.hasOwnProperty("author")) {
+                properties._author = 1;
                 if (!$util.isString(message.author))
                     return "author: string expected";
-            if (message.description != null && message.hasOwnProperty("description"))
+            }
+            if (message.description != null && message.hasOwnProperty("description")) {
+                properties._description = 1;
                 if (!$util.isString(message.description))
                     return "description: string expected";
+            }
             if (message.genre != null && message.hasOwnProperty("genre")) {
                 if (!Array.isArray(message.genre))
                     return "genre: array expected";
@@ -428,9 +482,11 @@ $root.TachiyomiObjectModel = (function() {
             if (message.status != null && message.hasOwnProperty("status"))
                 if (!$util.isInteger(message.status) && !(message.status && $util.isInteger(message.status.low) && $util.isInteger(message.status.high)))
                     return "status: integer|Long expected";
-            if (message.thumbnailUrl != null && message.hasOwnProperty("thumbnailUrl"))
+            if (message.thumbnailUrl != null && message.hasOwnProperty("thumbnailUrl")) {
+                properties._thumbnailUrl = 1;
                 if (!$util.isString(message.thumbnailUrl))
                     return "thumbnailUrl: string expected";
+            }
             if (message.dateAdded != null && message.hasOwnProperty("dateAdded"))
                 if (!$util.isInteger(message.dateAdded) && !(message.dateAdded && $util.isInteger(message.dateAdded.low) && $util.isInteger(message.dateAdded.high)))
                     return "dateAdded: integer|Long expected";
@@ -612,15 +668,11 @@ $root.TachiyomiObjectModel = (function() {
                     object.source = options.longs === String ? "0" : 0;
                 object.url = "";
                 object.title = "";
-                object.artist = "";
-                object.author = "";
-                object.description = "";
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.status = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
                 } else
                     object.status = options.longs === String ? "0" : 0;
-                object.thumbnailUrl = "";
                 if ($util.Long) {
                     var long = new $util.Long(0, 0, false);
                     object.dateAdded = options.longs === String ? long.toString() : options.longs === Number ? long.toNumber() : long;
@@ -639,12 +691,21 @@ $root.TachiyomiObjectModel = (function() {
                 object.url = message.url;
             if (message.title != null && message.hasOwnProperty("title"))
                 object.title = message.title;
-            if (message.artist != null && message.hasOwnProperty("artist"))
+            if (message.artist != null && message.hasOwnProperty("artist")) {
                 object.artist = message.artist;
-            if (message.author != null && message.hasOwnProperty("author"))
+                if (options.oneofs)
+                    object._artist = "artist";
+            }
+            if (message.author != null && message.hasOwnProperty("author")) {
                 object.author = message.author;
-            if (message.description != null && message.hasOwnProperty("description"))
+                if (options.oneofs)
+                    object._author = "author";
+            }
+            if (message.description != null && message.hasOwnProperty("description")) {
                 object.description = message.description;
+                if (options.oneofs)
+                    object._description = "description";
+            }
             if (message.genre && message.genre.length) {
                 object.genre = [];
                 for (var j = 0; j < message.genre.length; ++j)
@@ -655,8 +716,11 @@ $root.TachiyomiObjectModel = (function() {
                     object.status = options.longs === String ? String(message.status) : message.status;
                 else
                     object.status = options.longs === String ? $util.Long.prototype.toString.call(message.status) : options.longs === Number ? new $util.LongBits(message.status.low >>> 0, message.status.high >>> 0).toNumber() : message.status;
-            if (message.thumbnailUrl != null && message.hasOwnProperty("thumbnailUrl"))
+            if (message.thumbnailUrl != null && message.hasOwnProperty("thumbnailUrl")) {
                 object.thumbnailUrl = message.thumbnailUrl;
+                if (options.oneofs)
+                    object._thumbnailUrl = "thumbnailUrl";
+            }
             if (message.dateAdded != null && message.hasOwnProperty("dateAdded"))
                 if (typeof message.dateAdded === "number")
                     object.dateAdded = options.longs === String ? String(message.dateAdded) : message.dateAdded;
@@ -756,11 +820,11 @@ $root.TachiyomiObjectModel = (function() {
 
         /**
          * BackupChapter scanlator.
-         * @member {string} scanlator
+         * @member {string|null|undefined} scanlator
          * @memberof TachiyomiObjectModel.BackupChapter
          * @instance
          */
-        BackupChapter.prototype.scanlator = "";
+        BackupChapter.prototype.scanlator = null;
 
         /**
          * BackupChapter read.
@@ -817,6 +881,20 @@ $root.TachiyomiObjectModel = (function() {
          * @instance
          */
         BackupChapter.prototype.sourceOrder = 0;
+
+        // OneOf field names bound to virtual getters and setters
+        var $oneOfFields;
+
+        /**
+         * BackupChapter _scanlator.
+         * @member {"scanlator"|undefined} _scanlator
+         * @memberof TachiyomiObjectModel.BackupChapter
+         * @instance
+         */
+        Object.defineProperty(BackupChapter.prototype, "_scanlator", {
+            get: $util.oneOfGetter($oneOfFields = ["scanlator"]),
+            set: $util.oneOfSetter($oneOfFields)
+        });
 
         /**
          * Creates a new BackupChapter instance using the specified properties.
@@ -961,15 +1039,18 @@ $root.TachiyomiObjectModel = (function() {
         BackupChapter.verify = function verify(message) {
             if (typeof message !== "object" || message === null)
                 return "object expected";
+            var properties = {};
             if (message.url != null && message.hasOwnProperty("url"))
                 if (!$util.isString(message.url))
                     return "url: string expected";
             if (message.name != null && message.hasOwnProperty("name"))
                 if (!$util.isString(message.name))
                     return "name: string expected";
-            if (message.scanlator != null && message.hasOwnProperty("scanlator"))
+            if (message.scanlator != null && message.hasOwnProperty("scanlator")) {
+                properties._scanlator = 1;
                 if (!$util.isString(message.scanlator))
                     return "scanlator: string expected";
+            }
             if (message.read != null && message.hasOwnProperty("read"))
                 if (typeof message.read !== "boolean")
                     return "read: boolean expected";
@@ -1059,7 +1140,6 @@ $root.TachiyomiObjectModel = (function() {
             if (options.defaults) {
                 object.url = "";
                 object.name = "";
-                object.scanlator = "";
                 object.read = false;
                 object.bookmark = false;
                 object.lastPageRead = 0;
@@ -1080,8 +1160,11 @@ $root.TachiyomiObjectModel = (function() {
                 object.url = message.url;
             if (message.name != null && message.hasOwnProperty("name"))
                 object.name = message.name;
-            if (message.scanlator != null && message.hasOwnProperty("scanlator"))
+            if (message.scanlator != null && message.hasOwnProperty("scanlator")) {
                 object.scanlator = message.scanlator;
+                if (options.oneofs)
+                    object._scanlator = "scanlator";
+            }
             if (message.read != null && message.hasOwnProperty("read"))
                 object.read = message.read;
             if (message.bookmark != null && message.hasOwnProperty("bookmark"))

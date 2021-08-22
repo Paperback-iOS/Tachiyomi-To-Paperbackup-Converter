@@ -10,6 +10,8 @@ export class GuyaConversionSource extends AbstractConversionSource {
 
     paperbackSourceId: string = "Guya"             // In this case, the source ID in Paperback is also Guya!
 
+    tachiyomiSourceName: string = "Guya"
+
     paperbackSourceRepository = PaperbackRepository.PROMISES
 
     /*

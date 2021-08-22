@@ -25,6 +25,12 @@ export abstract class AbstractConversionSource {
     abstract paperbackSourceId: string
 
     /**
+     * A displayable name for the source.
+     * It will be used as the source to display when adding the source to a Tachiyomi backup
+     */
+    abstract tachiyomiSourceName: string
+
+    /**
      * A {@link PaperbackBackup.SourceRepository} object of a repository containing the source.
      * Should be a constant from {@link PaperbackRepository}
      * It will be used to make a request to get the repository versioning file, to have additional info about the source

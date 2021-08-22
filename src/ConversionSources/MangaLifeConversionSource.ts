@@ -10,6 +10,8 @@ export class MangaLifeConversionSource extends AbstractConversionSource {
 
     paperbackSourceId: string = "MangaLife"             // In this case, the source ID in Paperback is also MangaLife!
 
+    tachiyomiSourceName: string = "MangaLife"
+
     paperbackSourceRepository = PaperbackRepository.PROMISES
 
     /*

@@ -10,6 +10,8 @@ export class MangaseeConversionSource extends AbstractConversionSource {
 
     paperbackSourceId: string = "Mangasee"      // In this case, the source ID in Paperback is also Mangasee!
 
+    tachiyomiSourceName: string = "MangaSee"
+
     paperbackSourceRepository = PaperbackRepository.PROMISES
 
     /*

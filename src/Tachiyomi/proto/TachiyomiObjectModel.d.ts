@@ -76,13 +76,13 @@ export namespace TachiyomiObjectModel {
         public title: string;
 
         /** BackupManga artist. */
-        public artist: string;
+        public artist?: (string|null);
 
         /** BackupManga author. */
-        public author: string;
+        public author?: (string|null);
 
         /** BackupManga description. */
-        public description: string;
+        public description?: (string|null);
 
         /** BackupManga genre. */
         public genre: string[];
@@ -91,7 +91,7 @@ export namespace TachiyomiObjectModel {
         public status: (number|Long);
 
         /** BackupManga thumbnailUrl. */
-        public thumbnailUrl: string;
+        public thumbnailUrl?: (string|null);
 
         /** BackupManga dateAdded. */
         public dateAdded: (number|Long);
@@ -116,6 +116,18 @@ export namespace TachiyomiObjectModel {
 
         /** BackupManga history. */
         public history: TachiyomiObjectModel.IBackupHistory[];
+
+        /** BackupManga _artist. */
+        public _artist?: "artist";
+
+        /** BackupManga _author. */
+        public _author?: "author";
+
+        /** BackupManga _description. */
+        public _description?: "description";
+
+        /** BackupManga _thumbnailUrl. */
+        public _thumbnailUrl?: "thumbnailUrl";
 
         /**
          * Creates a new BackupManga instance using the specified properties.
@@ -238,7 +250,7 @@ export namespace TachiyomiObjectModel {
         public name: string;
 
         /** BackupChapter scanlator. */
-        public scanlator: string;
+        public scanlator?: (string|null);
 
         /** BackupChapter read. */
         public read: boolean;
@@ -260,6 +272,9 @@ export namespace TachiyomiObjectModel {
 
         /** BackupChapter sourceOrder. */
         public sourceOrder: number;
+
+        /** BackupChapter _scanlator. */
+        public _scanlator?: "scanlator";
 
         /**
          * Creates a new BackupChapter instance using the specified properties.

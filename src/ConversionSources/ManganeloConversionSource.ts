@@ -11,6 +11,8 @@ export class ManganeloConversionSource extends AbstractConversionSource {
 
     paperbackSourceId: string = "Manganelo"             // In this case, the source ID in Paperback is also Manganelo!
 
+    tachiyomiSourceName: string = "Manganato"
+
     paperbackSourceRepository = PaperbackRepository.PROMISES
 
     /*

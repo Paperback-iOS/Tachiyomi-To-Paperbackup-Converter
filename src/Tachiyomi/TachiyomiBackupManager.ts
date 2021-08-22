@@ -146,4 +146,9 @@ export class TachiyomiBackupManager {
         this.backup.backupCategories.push(categoryObject)
     }
 
+    appendSource(source: TachiyomiObjectModel.IBackupSource) {
+        const sourceObject = TachiyomiObjectModel.BackupSource.create(source)
+        this.backup.backupSources.push(sourceObject)
+    }
+
 }
