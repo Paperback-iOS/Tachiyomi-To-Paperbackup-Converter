@@ -1,5 +1,5 @@
 {
-  "name": "md-heroku",
+  "name": "backup-converters",
   "version": "1.0.0",
   "description": "",
   "main": "dist/app.js",
@@ -11,19 +11,22 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/uuid": "^8.3.1"
-  },
-  "dependencies": {
+    "@babel/core": "^7.15.0",
     "@types/lodash": "^4.14.165",
     "@types/node": "^12.12.19",
-    "@types/protobufjs": "^6.0.0",
+    "@types/uuid": "^8.3.1",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^10.0.0",
+    "browserify": "^17.0.0",
+    "tinyify": "^3.0.0",
+    "ts-node": "^9.0.0",
+    "tslint": "^5.20.1"
+  },
+  "dependencies": {
     "axios": "^0.21.0",
     "lodash": "^4.17.20",
     "pako": "^2.0.4",
     "protobufjs": "^6.10.2",
-    "ts-node": "^9.0.0",
-    "tslint": "^5.20.1",
     "typescript": "^3.7.3",
     "uuid": "^3.4.0"
   }
