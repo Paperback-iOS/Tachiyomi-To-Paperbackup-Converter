@@ -2,11 +2,14 @@
   "name": "backup-converters",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/app.js",
+  "main": "dist/BackupConverters/TachiToPaperBackupConverter.js",
   "scripts": {
     "start": "ts-node src/app.ts",
     "dev": "nodemon -e ts  --exec \"npm run start\"",
-    "recompile-tachiyomi-proto": "pbjs -t static-module -w commonjs -o src/Tachiyomi/proto/TachiyomiObjectModel.js src/Tachiyomi/proto/tachiyomiObjectModel.proto && pbts -o src/Tachiyomi/proto/TachiyomiObjectModel.d.ts src/Tachiyomi/proto/TachiyomiObjectModel.js"
+    "recompile-tachiyomi-proto": "pbjs -t static-module -w commonjs -o src/Tachiyomi/proto/TachiyomiObjectModel.js src/Tachiyomi/proto/tachiyomiObjectModel.proto && pbts -o src/Tachiyomi/proto/TachiyomiObjectModel.d.ts src/Tachiyomi/proto/TachiyomiObjectModel.js",
+    "build": "tsc",
+    "pack": "browserify dist/BackupConverters/TachiToPaperBackupConverter.js -o browser/bundle.js -s BackupConverter",
+    "packtiny": "browserify dist/BackupConverters/TachiToPaperBackupConverter.js -o browser/bundle.js -s BackupConverter --plugin tinyify"
   },
   "author": "",
   "license": "ISC",
