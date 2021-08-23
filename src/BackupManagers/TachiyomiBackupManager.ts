@@ -1,6 +1,6 @@
 import { Reader } from "protobufjs";
 import { LightRepresentation } from "../LightRepresentation/LightRepresentation";
-import { TachiyomiObjectModel } from "./proto/TachiyomiObjectModel"
+import { TachiyomiObjectModel } from "../Tachiyomi/proto/TachiyomiObjectModel"
 
 const pako = require('pako');
 

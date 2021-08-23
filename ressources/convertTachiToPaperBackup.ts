@@ -7,14 +7,15 @@
  * ```
  */
 
-import { mkdir, readFileSync, writeFile } from "fs"
+import { existsSync, mkdir, mkdirSync, readFileSync, writeFile } from "fs"
+import { basename } from "path"
 import { TachiToPaperBackupConverter } from "../src/BackupConverters/TachiToPaperBackupConverter"
-import { TachiyomiBackupManager } from "../src/Tachiyomi/TachiyomiBackupManager"
+import { TachiyomiBackupManager } from "../src/BackupManagers/TachiyomiBackupManager"
 
-const path = 'ressources/backup-examples/tachiyomi_six_titles_various_sources.proto.gz'
-const outputPath = 'ressources/converted-backup-examples/PaperExp-tachiyomi_six_titles_various_sources.json'
+const backupPath = 'ressources/backup-examples/tachiyomi_six_titles_various_sources.proto.gz'
+const outputDirectory = 'ressources/converted-backup-examples/'
 
-const protoGzFile = readFileSync(path)
+const protoGzFile = readFileSync(backupPath)
 
 const tachiyomiBackupManager = new TachiyomiBackupManager()
 tachiyomiBackupManager.loadProtoGz(protoGzFile)
@@ -23,14 +24,15 @@ const tachiyomiBackup = tachiyomiBackupManager.exportBackup()
 
 const convertionManager = new TachiToPaperBackupConverter(tachiyomiBackup)
 
-mkdir('ressources/converted-backup-examples', (err) => {
-    if (err) throw err;
-});
 convertionManager.conversion()
     .then((paperbackBackup) => {
+
+        if (!existsSync(outputDirectory)){
+            mkdirSync(outputDirectory)
+        }
+        const outputPath = outputDirectory + 'ExpToPaper-' + basename(backupPath).replace('.proto.gz', '.json')
         writeFile(outputPath, JSON.stringify(paperbackBackup), (err) => {
             if (err) throw err;
-
             console.log('Backup saved!');
         })
     })

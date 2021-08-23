@@ -4,7 +4,7 @@ import { PaperbackBackup } from "../Paperback/PaperbackBackup";
 import { AbstractConversionSource } from "../ConversionSources/AbstractConversionSource";
 import { getConversionSourcesList } from "../ConversionSources/ConversionSources";
 
-import { TachiyomiBackupManager } from "../Tachiyomi/TachiyomiBackupManager";
+import { TachiyomiBackupManager } from "../BackupManagers/TachiyomiBackupManager";
 
 import { Dictionary } from "lodash";
 import Long from "long";

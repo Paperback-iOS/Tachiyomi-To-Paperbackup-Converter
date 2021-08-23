@@ -21,3 +21,12 @@ export function getConversionSourcesList() {
     ]
 }
 
+
+
+/**
+ * @returns the list of existing converters' names. 
+ * Used to display available converters
+ */
+export function getConversionSourcesNames() {
+    return getConversionSourcesList().map((converter) => converter.tachiyomiSourceName)
+}

@@ -1,5 +1,5 @@
 import { LightRepresentation } from "../LightRepresentation/LightRepresentation"
-import { PaperbackBackup } from "./PaperbackBackup"
+import { PaperbackBackup } from "../Paperback/PaperbackBackup"
 
 /**
  * A manager for a `backupSchemaVersion 3` Paperback backup

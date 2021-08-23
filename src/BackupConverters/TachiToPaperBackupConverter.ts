@@ -1,6 +1,6 @@
 import { TachiyomiObjectModel } from "../Tachiyomi/proto/TachiyomiObjectModel"
 import { PaperbackBackup } from "../Paperback/PaperbackBackup";
-import { PaperbackBackupManager } from "../Paperback/PaperbackBackupManager"
+import { PaperbackBackupManager } from "../BackupManagers/PaperbackBackupManager"
 import { PaperbackRepository } from "../Paperback/PaperbackRepository";
 
 import { AbstractConversionSource } from "../ConversionSources/AbstractConversionSource";
