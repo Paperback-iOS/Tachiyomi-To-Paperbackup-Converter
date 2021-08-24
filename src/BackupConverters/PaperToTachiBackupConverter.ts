@@ -122,12 +122,16 @@ export class PaperToTachiBackupConverter {
 
             const converter = conversionSourcesDict[paperbackSourceId]
 
-            const source: TachiyomiObjectModel.BackupSource = {
+			// sourceId should have a type: `Number | Long.Long`. 
+			// Or Tachiyomi are using source ids (ex: 2499283573021220255 for md) that are bigger that the maximal Number, they are thus changed during the encoding (ex: 2499283573021220255 becomes 2499283573021220352)
+			// To prevent this issue, we won't use a Number but a [Long](https://www.npmjs.com/package/long) element.
+
+			// NOTE, passing directly a string to the encoder works in node but not in the browserified version.
+			const sourceId = Long.fromString(converter.getMainTachiyomiSourceId())
+
+            const source: TachiyomiObjectModel.IBackupSource = {
                 name: converter.tachiyomiSourceName,
-                // sourceId should be a `Number | Long.Long`. Or numbers are changed during the encoding (ex: 2499283573021220255 becomes 2499283573021220352)
-                // The proto encoder don't mind if we give a string instead of a `Number | Long.Long`, which happen to solve the issue.
-                //@ts-ignore
-                sourceId: converter.getMainTachiyomiSourceId()
+                sourceId: sourceId
             }
 
             tachiyomiBackupManager.appendSource(source)
