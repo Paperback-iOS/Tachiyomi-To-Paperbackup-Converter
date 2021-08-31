@@ -37,7 +37,7 @@ export class TachiToPaperBackupConverter {
      * 
      * @returns a promise resolving into the converted Paperback backup object
      */
-    async conversion(): Promise<PaperbackBackup.Backup> {
+    async conversion(): Promise<conversionResult<PaperbackBackup.Backup>> {
 
         // We use a PaperbackBackupManager to generate the converted backup
         let paperbackBackupManager = new PaperbackBackupManager()
@@ -74,7 +74,7 @@ export class TachiToPaperBackupConverter {
         // We keep a list of the manga that could not be converted
         // We could add a more explicit reason (ex: unsupported source)
         //let unconvertedMangas: TachiyomiObjectModel.IBackupManga[] = []
-        let unconvertedMangas: {tachiyomiMangaId: string, tachiyomiSourceId: string}[] = []
+        let unconvertedMangas: {mangaTitle: string, mangaId: string, sourceId: string}[] = []
 
         // We will first create the list of all categories in the original backup
         // and add them to the converted one
@@ -100,8 +100,9 @@ export class TachiToPaperBackupConverter {
             // If it does not exist, we wont be able to convert the manga
             if (sourceConverter === undefined) {
                 unconvertedMangas.push({
-                    tachiyomiMangaId: manga.url ?? 'undefined',
-                    tachiyomiSourceId: manga.source?.toString() ?? 'undefined'
+                    mangaTitle: manga.title ?? 'undefined',
+                    mangaId: manga.url ?? 'undefined',
+                    sourceId: manga.source?.toString() ?? 'undefined'
                 })
                 console.log("Unsupported source " + manga.source?.toString())
 
@@ -155,7 +156,11 @@ export class TachiToPaperBackupConverter {
             }
         }
         
-        return paperbackBackupManager.exportBackup()
+        return {
+			backupObject: paperbackBackupManager.exportBackup(),
+			unconverted: unconvertedMangas,
+            type: 'Paperback'
+		}
     }
 
     /**
